@@ -99,49 +99,85 @@ window.fetchDataFromCloudAndRender = async (renderCallback) => {
         let shouldRender = false;
         
         if (txns) {
-            const mappedTxns = txns.map(t => ({
-                id: t.id,
-                txnId: t.txn_id,
-                date: t.date,
-                time: t.time,
-                type: t.type,
-                personName: t.person_name,
-                itemName: t.item_name,
-                price: parseFloat(t.price) || 0,
-                quantity: parseFloat(t.quantity) || 0,
-                unit: t.unit,
-                freight: parseFloat(t.freight) || 0,
-                delivered: t.delivered
-            }));
-            
-            // Only update if cloud has different data count (simple diff check to prevent infinite loops)
             const localTxns = JSON.parse(localStorage.getItem('transactions')) || [];
-            if (localTxns.length !== mappedTxns.length || JSON.stringify(localTxns) !== JSON.stringify(mappedTxns)) {
-                localStorage.setItem('transactions', JSON.stringify(mappedTxns));
-                // Update global reference if it exists
-                if (typeof window.transactions !== 'undefined') window.transactions = mappedTxns;
+            
+            const cloudTxnMap = {};
+            txns.forEach(t => {
+                cloudTxnMap[t.id] = {
+                    id: t.id,
+                    txnId: t.txn_id,
+                    date: t.date,
+                    time: t.time,
+                    type: t.type,
+                    personName: t.person_name,
+                    itemName: t.item_name,
+                    price: parseFloat(t.price) || 0,
+                    quantity: parseFloat(t.quantity) || 0,
+                    unit: t.unit,
+                    freight: parseFloat(t.freight) || 0,
+                    delivered: t.delivered
+                };
+            });
+            
+            // Merge: Keep local txns that aren't in the cloud yet
+            const mergedTxns = localTxns.map(localT => {
+                if (cloudTxnMap[localT.id]) {
+                    const cloudT = cloudTxnMap[localT.id];
+                    delete cloudTxnMap[localT.id];
+                    return cloudT;
+                }
+                return localT; 
+            });
+            
+            Object.values(cloudTxnMap).forEach(cloudT => {
+                mergedTxns.push(cloudT);
+            });
+            
+            if (JSON.stringify(localTxns) !== JSON.stringify(mergedTxns)) {
+                localStorage.setItem('transactions', JSON.stringify(mergedTxns));
+                if (typeof window.transactions !== 'undefined') window.transactions = mergedTxns;
                 shouldRender = true;
             }
         }
         
         if (itms) {
             const localItms = JSON.parse(localStorage.getItem('items')) || [];
-            const mappedItms = itms.map(i => {
-                const localItem = localItms.find(l => l.id === i.id) || {};
-                return {
+            
+            const cloudItmMap = {};
+            itms.forEach(i => {
+                cloudItmMap[i.id] = i;
+            });
+            
+            const mergedItms = localItms.map(localI => {
+                if (cloudItmMap[localI.id]) {
+                    const i = cloudItmMap[localI.id];
+                    delete cloudItmMap[localI.id];
+                    return {
+                        id: i.id,
+                        name: i.name,
+                        stock: parseFloat(i.stock) || 0,
+                        rate: localI.rate !== undefined ? localI.rate : (parseFloat(i.avg_rate) || 0),
+                        personName: localI.personName || '',
+                        unit: i.unit
+                    };
+                }
+                return localI;
+            });
+            
+            Object.values(cloudItmMap).forEach(i => {
+                mergedItms.push({
                     id: i.id,
                     name: i.name,
                     stock: parseFloat(i.stock) || 0,
-                    rate: localItem.rate !== undefined ? localItem.rate : (parseFloat(i.avg_rate) || 0),
-                    personName: localItem.personName || '',
+                    rate: parseFloat(i.avg_rate) || 0,
+                    personName: '',
                     unit: i.unit
-                };
+                });
             });
             
-            if (localItms.length !== mappedItms.length || JSON.stringify(localItms) !== JSON.stringify(mappedItms)) {
-                localStorage.setItem('items', JSON.stringify(mappedItms));
-                // Update global reference if it exists
-                if (typeof window.items !== 'undefined') window.items = mappedItms;
+            if (JSON.stringify(localItms) !== JSON.stringify(mergedItms)) {
+                localStorage.setItem('items', JSON.stringify(mergedItms));
+                if (typeof window.items !== 'undefined') window.items = mergedItms;
                 shouldRender = true;
             }
         }

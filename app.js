@@ -251,7 +251,8 @@ const renderHistory = (filterText = '') => {
 
     const filteredTransactions = transactions.filter(t => {
         const name = t.personName || '';
-        return name.toLowerCase().includes(filterText.toLowerCase());
+        const isAutoPayment = t.itemName && t.itemName.startsWith('Payment /');
+        return name.toLowerCase().includes(filterText.toLowerCase()) && !isAutoPayment;
     });
 
     if (filteredTransactions.length === 0) {
@@ -262,6 +263,7 @@ const renderHistory = (filterText = '') => {
         historyList.parentElement.classList.remove('hidden');
 
         const sortedTransactions = [...filteredTransactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+        const seenTxnIds = new Set();
 
         sortedTransactions.forEach(t => {
             const row = document.createElement('tr');
@@ -276,6 +278,7 @@ const renderHistory = (filterText = '') => {
                 <td>${formatCurrency(t.price)}</td>
                 <td>${formatCurrency(total)}</td>
                 <td class="invoice-cell" style="width: 120px;">
+                ${!seenTxnIds.has(t.txnId) ? `
                 <div style="display: flex; gap: 0.75rem; align-items: center; justify-content: flex-end;">
                     <button class="action-icon" style="background: none; border: none; color: var(--accent-color); cursor: pointer;" onclick="printInvoice('${t.txnId}')" title="Print">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
@@ -283,11 +286,12 @@ const renderHistory = (filterText = '') => {
                     <button class="action-icon" style="background: none; border: none; color: #4338ca; cursor: pointer; display: flex; align-items: center;" onclick="showCopyModal('${t.txnId}')" title="Copy Invoice Image">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                     </button>
-                    <button class="action-icon text-red" style="background: none; border: none; color: var(--red); cursor: pointer;" onclick="deleteHistoryTransaction('${t.id}')" title="Delete">
+                    <button class="action-icon text-red" style="background: none; border: none; color: var(--red); cursor: pointer;" onclick="deleteHistoryTransaction('${t.txnId}')" title="Delete">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                     </button>
-                </div>
+                </div>` : ''}
             </td>`;
+            seenTxnIds.add(t.txnId);
             historyList.appendChild(row);
             
             if (t.freight && parseFloat(t.freight) > 0) {
@@ -307,11 +311,15 @@ const renderHistory = (filterText = '') => {
     }
 };
 
-window.deleteHistoryTransaction = (id) => {
-    showConfirm('Delete Transaction', 'Are you sure you want to delete this historical transaction?', 'Delete', 'var(--red)', () => {
-        transactions = transactions.filter(t => t.id !== id);
+window.deleteHistoryTransaction = (txnId) => {
+    showConfirm('Delete Invoice', 'Are you sure you want to delete this entire invoice?', 'Delete', 'var(--red)', () => {
+        transactions = transactions.filter(t => t.txnId !== txnId);
         localStorage.setItem('transactions', JSON.stringify(transactions));
+        if (window.deleteTransactionFromCloud) window.deleteTransactionFromCloud(txnId);
         renderHistory(txnPerson.value.trim());
+        
+        // Also update items totals if necessary
+        updateItemTotals();
     });
 };
 
