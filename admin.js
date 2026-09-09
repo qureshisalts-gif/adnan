@@ -149,7 +149,7 @@ itemForm.addEventListener('submit', (e) => {
         id: crypto.randomUUID(),
         name: name,
         personName: itemPersonInput ? itemPersonInput.value.trim() : '',
-        rate: parseFloat(itemRateInput.value),
+        rate: parseFloat(itemRateInput.value) || 0,
         unit: itemUnitInput.value
     };
 
@@ -197,11 +197,11 @@ editForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const id = editItemId.value;
     const newName = editItemName.value.trim();
-    const newRate = parseFloat(editItemRate.value);
+    const newRate = parseFloat(editItemRate.value) || 0;
     const newPersonName = editItemPerson ? editItemPerson.value.trim() : '';
     
     const item = items.find(i => i.id === id);
-    if (item && !isNaN(newRate) && newRate >= 0 && newName) {
+    if (item && newRate >= 0 && newName) {
         if (item.name !== newName) {
             // Check for duplicate name
             if (items.some(i => i.id !== id && i.name.toLowerCase() === newName.toLowerCase())) {

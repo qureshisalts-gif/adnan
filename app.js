@@ -9,6 +9,7 @@ const txnPerson = document.getElementById('txn-person');
 
 const itemSelect = document.getElementById('item-select');
 const itemQty = document.getElementById('item-qty');
+const itemRateMain = document.getElementById('item-rate-main');
 const cartItemTotal = document.getElementById('cart-item-total');
 const cartItemWeight = document.getElementById('cart-item-weight');
 const freightChargesInput = document.getElementById('freight-charges');
@@ -169,12 +170,11 @@ const updateItemTotals = () => {
     const qty = parseFloat(itemQty.value) || 0;
     const freight = parseFloat(freightChargesInput.value) || 0;
 
-    let rate = 0;
+    let rate = parseFloat(itemRateMain.value) || 0;
     let unit = 'Kg';
     let name = '';
     const selectedOption = itemSelect.options[itemSelect.selectedIndex];
     if (selectedOption.value) {
-        rate = parseFloat(selectedOption.getAttribute('data-rate')) || 0;
         unit = selectedOption.getAttribute('data-unit') || 'Kg';
         name = selectedOption.getAttribute('data-name');
     }
@@ -195,8 +195,17 @@ const updateRemainingBalance = () => {
     finRemainingBalance.value = remaining.toFixed(2);
 };
 
-itemSelect.addEventListener('change', updateItemTotals);
+itemSelect.addEventListener('change', () => {
+    const selectedOption = itemSelect.options[itemSelect.selectedIndex];
+    if (selectedOption.value) {
+        itemRateMain.value = selectedOption.getAttribute('data-rate') || 0;
+    } else {
+        itemRateMain.value = 0;
+    }
+    updateItemTotals();
+});
 itemQty.addEventListener('input', updateItemTotals);
+itemRateMain.addEventListener('input', updateItemTotals);
 freightChargesInput.addEventListener('input', updateItemTotals);
 finAmountPaid.addEventListener('input', updateRemainingBalance);
 
@@ -316,7 +325,7 @@ addToListBtn.addEventListener('click', () => {
     }
 
     const itemName = selectedOption.getAttribute('data-name');
-    const rate = parseFloat(selectedOption.getAttribute('data-rate'));
+    const rate = parseFloat(itemRateMain.value) || 0;
     const unit = selectedOption.getAttribute('data-unit') || 'Kg';
     const qty = parseFloat(itemQty.value);
     const freight = parseFloat(freightChargesInput.value) || 0;
@@ -337,6 +346,7 @@ addToListBtn.addEventListener('click', () => {
 
     itemSelect.value = '';
     itemQty.value = '0';
+    itemRateMain.value = '0';
     freightChargesInput.value = '0';
     updateItemTotals();
     renderCart();
