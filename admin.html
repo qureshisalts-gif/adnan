@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - TrackFlow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <main class="container">
+        <header class="top-nav" style="display: flex; justify-content: space-between; margin-bottom: 2rem; align-items: center;">
+            <h1 style="font-size: 2rem;" data-i18n="dash_title">Business Dashboard</h1>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <div class="nav-controls" style="display: flex; gap: 0.5rem; align-items: center;">
+                    <a href="labour.html" class="btn-secondary" style="width: auto; margin: 0; padding: 0.5rem 1rem; border-radius: 20px; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; background: var(--card-bg); color: var(--text-primary); border: 1px solid var(--card-border);">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        <span style="font-weight: 600;">Labour</span>
+                    </a>
+                    <a href="invoices.html" class="btn-secondary" style="width: auto; margin: 0; padding: 0.5rem 1rem; border-radius: 20px; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; background: var(--card-bg); color: var(--text-primary); border: 1px solid var(--card-border);">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        <span style="font-weight: 600;" data-i18n="nav_invoices">Invoices</span>
+                    </a>
+                    <button id="lang-toggle-btn" class="icon-btn" style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); cursor: pointer; display: flex; justify-content: center; align-items: center; font-family: 'Noto Nastaliq Urdu', serif; font-weight: 600;">اردو</button>
+                    <button id="theme-toggle-btn" class="icon-btn" style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); cursor: pointer; display: flex; justify-content: center; align-items: center;">
+                        <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                        <svg class="sun-icon hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                    </button>
+                </div>
+                <a href="index.html" class="btn-primary" style="width: auto; margin-top: 0; padding: 0.5rem 1.5rem; border-radius: 20px; text-decoration: none; display: inline-block;" data-i18n="nav_back">Back to main panal</a>
+            </div>
+        </header>
+
+
+
+        <div class="main-content">
+            <section class="form-section">
+                <div class="card glass-card">
+                    <h2 data-i18n="add_new_item">Add New Item</h2>
+                    <form id="item-form">
+                        <div class="form-group">
+                            <label for="item-name">Item Name</label>
+                            <input type="text" id="item-name" placeholder="e.g. Rice, Wheat..." data-i18n="item_placeholder" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <label for="item-rate" data-i18n="rate">Rate (Price)</label>
+                                <input type="number" id="item-rate" min="0" step="0.01" placeholder="0.00" required>
+                            </div>
+                            <div class="form-group half">
+                                <label for="item-unit" data-i18n="unit">Unit</label>
+                                <select id="item-unit" required>
+                                    <option value="Kg">Kg</option>
+                                    <option value="Pcs">Pcs</option>
+                                    <option value="Ltr">Ltr</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary mt-4" data-i18n="btn_add_item">Add Item</button>
+                    </form>
+                </div>
+            </section>
+
+            <section class="history-section">
+                <div class="card glass-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--card-border); padding-bottom: 0.75rem;">
+                        <h2 style="margin-bottom: 0; border: none; padding: 0;">Item List</h2>
+                        <input type="text" id="item-search" placeholder="Search stock name..." style="width: 250px;">
+                    </div>
+                    <div class="table-container">
+                        <table id="item-table">
+                            <thead>
+                                <tr>
+                                    <th>Item Name</th>
+                                    <th data-i18n="th_rate">Rate</th>
+                                    <th data-i18n="unit">Unit</th>
+                                    <th data-i18n="th_stockin">Stock In</th>
+                                    <th data-i18n="th_stockout">Stock Out</th>
+                                    <th data-i18n="th_currentstock">Current Stock</th>
+                                    <th data-i18n="th_action">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="item-list">
+                                <!-- Items will be inserted here dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="item-empty-state" class="empty-state">
+                        <p>No items found. Add one to get started.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="delivery-section" style="margin-top: 2rem; grid-column: 1 / -1;">
+                <div class="card glass-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--card-border); padding-bottom: 0.75rem;">
+                        <h2 style="margin-bottom: 0; border: none; padding: 0;" data-i18n="delivery_checklist">Delivery Checklist</h2>
+                        <input type="text" id="delivery-search" placeholder="Search person or item..." style="width: 250px;">
+                    </div>
+                    <div class="table-container">
+                        <table id="delivery-table">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="th_date">Date</th>
+                                    <th data-i18n="person_name">Person Name</th>
+                                    <th data-i18n="th_item">Item</th>
+                                    <th data-i18n="quantity">Qty</th>
+                                    <th data-i18n="status">Delivery Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="delivery-list">
+                                <!-- Delivery items will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="delivery-empty-state" class="empty-state">
+                        <p>No sales records found.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Edit Rate Modal -->
+    <div id="edit-modal" class="modal-overlay hidden">
+        <div class="modal-content card glass-card">
+            <div class="modal-header">
+                <h2 data-i18n="edit_item">Edit Item</h2>
+                <button id="close-modal-btn" class="delete-btn" style="width: auto;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <form id="edit-form">
+                <input type="hidden" id="edit-item-id">
+                <div class="form-group">
+                    <label for="edit-item-name">Item Name</label>
+                    <input type="text" id="edit-item-name" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label id="edit-item-rate-label" data-i18n="rate_pkr">Rate (PKR)</label>
+                        <input type="number" id="edit-item-rate" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group half">
+                        <label for="edit-item-unit" data-i18n="unit">Unit</label>
+                        <select id="edit-item-unit" required>
+                            <option value="Kg">Kg</option>
+                            <option value="Pcs">Pcs</option>
+                            <option value="Ltr">Ltr</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary" style="margin-top: 0.5rem;" data-i18n="save_changes">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Alert/Confirm Modal -->
+    <div id="dialog-modal" class="modal-overlay hidden">
+        <div class="modal-content card glass-card" style="max-width: 400px; text-align: center;">
+            <h2 id="dialog-title" style="margin-bottom: 1rem; border: none;" data-i18n="dialog_notice">Notice</h2>
+            <p id="dialog-message" style="margin-bottom: 2rem; color: var(--text-secondary);"></p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button id="dialog-cancel-btn" class="btn-secondary" style="margin: 0; width: auto; padding: 0.75rem 1.5rem;" data-i18n="dialog_cancel">Cancel</button>
+                <button id="dialog-ok-btn" class="btn-primary" style="margin: 0; width: auto; padding: 0.75rem 1.5rem;" data-i18n="dialog_ok">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="theme.js"></script>
+    <script src="admin.js"></script>
+    <script src="i18n.js"></script>
+</body>
+</html>

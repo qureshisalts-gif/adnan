@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoices - TrackFlow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .invoice-table th {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .invoice-row {
+            border-bottom: 1px solid var(--card-border);
+            transition: background-color 0.2s ease;
+        }
+
+        .invoice-row:hover {
+            background-color: rgba(99, 102, 241, 0.05);
+        }
+
+        .invoice-cell {
+            padding: 1.5rem 1rem;
+            vertical-align: top;
+            font-size: 0.95rem;
+        }
+
+        .cell-primary {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .cell-secondary {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .type-bold {
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-primary);
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            width: max-content;
+        }
+
+        .action-icon {
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: color 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: transparent;
+            border: none;
+            padding: 4px;
+        }
+
+        .action-icon:hover {
+            color: var(--accent-color);
+        }
+
+        .action-icon.text-green:hover {
+            color: var(--green);
+        }
+
+        .action-icon.text-red:hover {
+            color: var(--red);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+    <main class="container">
+        <header class="top-nav"
+            style="display: flex; justify-content: space-between; margin-bottom: 2rem; align-items: center;">
+            <h1 style="font-size: 2rem;" data-i18n="nav_invoices">Invoices</h1>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <div class="nav-controls" style="display: flex; gap: 0.5rem; align-items: center;">
+                    <a href="labour.html" class="btn-secondary"
+                        style="width: auto; margin: 0; padding: 0.5rem 1rem; border-radius: 20px; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; background: var(--card-bg); color: var(--text-primary); border: 1px solid var(--card-border);">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        <span style="font-weight: 600;">Labour</span>
+                    </a>
+                    <button id="lang-toggle-btn" class="icon-btn"
+                        style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); cursor: pointer; display: flex; justify-content: center; align-items: center; font-family: 'Noto Nastaliq Urdu', serif; font-weight: 600;">اردو</button>
+                    <button id="theme-toggle-btn" class="icon-btn"
+                        style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); cursor: pointer; display: flex; justify-content: center; align-items: center;">
+                        <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                        <svg class="sun-icon hidden" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                    </button>
+                </div>
+                <a href="index.html" class="btn-primary"
+                    style="width: auto; margin-top: 0; padding: 0.5rem 1.5rem; border-radius: 20px; text-decoration: none; display: inline-block;"
+                    data-i18n="nav_back">Back to main panal</a>
+            </div>
+        </header>
+        <div class="card glass-card" style="padding: 0; overflow: hidden;">
+            <div style="padding: 1.5rem; border-bottom: 1px solid var(--card-border); display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="margin: 0; border: none; padding: 0;" data-i18n="txn_ledger">Transaction Ledger</h2>
+                <input type="text" id="invoice-search" placeholder="Search Person Name..." data-i18n="search_person" style="width: 300px;">
+            </div>
+            <div class="table-container" style="padding: 0;">
+                <table class="invoice-table">
+                    <thead>
+                        <tr style="text-transform: uppercase; font-size: 0.8rem; color: var(--text-secondary);">
+                            <th data-i18n="th_person">Person Name</th>
+                            <th data-i18n="th_date">Date</th>
+                            <th data-i18n="th_type">Type</th>
+                            <th data-i18n="th_item">Item</th>
+                            <th data-i18n="th_pay_method">Payment Method</th>
+                            <th data-i18n="th_total_amt">Total Amt</th>
+                            <th data-i18n="th_amt_paid">Amount Paid</th>
+                            <th data-i18n="th_remaining">Remaining</th>
+                            <th data-i18n="th_actions">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoice-list"></tbody>
+                </table>
+            </div>
+            <div id="invoice-empty-state" class="empty-state hidden" style="padding: 3rem;">
+                <p>No transactions found.</p>
+            </div>
+        </div>
+    </main>
+    <div id="dialog-modal" class="modal-overlay hidden">
+        <div class="modal-content card glass-card" style="max-width: 400px; text-align: center;">
+            <h2 id="dialog-title" style="margin-bottom: 1rem; border: none;" data-i18n="dialog_notice">Notice</h2>
+            <p id="dialog-message" style="margin-bottom: 2rem; color: var(--text-secondary);"></p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button id="dialog-cancel-btn" class="btn-secondary"
+                    style="margin: 0; width: auto; padding: 0.75rem 1.5rem;" data-i18n="dialog_cancel">Cancel</button>
+                <button id="dialog-ok-btn" class="btn-primary" style="margin: 0; width: auto; padding: 0.75rem 1.5rem;"
+                    data-i18n="dialog_ok">OK</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit Options Modal -->
+    <div id="edit-options-modal" class="modal-overlay hidden">
+        <div class="modal-content card glass-card" style="max-width: 400px; text-align: center;">
+            <h2 style="margin-bottom: 1rem; border: none;">Edit Invoice</h2>
+            <p style="margin-bottom: 2rem; color: var(--text-secondary);">How would you like to edit this invoice?</p>
+            <div style="display: flex; flex-direction: column; gap: 1rem; justify-content: center;">
+                <button id="edit-full-btn" class="btn-primary" style="margin: 0; width: 100%;">Full Edit (Modify Items)</button>
+                <button id="edit-quick-btn" class="btn-primary" style="margin: 0; width: 100%; background-color: var(--card-border); color: var(--text-primary);">Quick Edit (Name, Date, Payment)</button>
+                <button id="edit-options-cancel-btn" class="btn-secondary" style="margin-top: 1rem; width: 100%;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Edit Modal -->
+    <div id="quick-edit-modal" class="modal-overlay hidden">
+        <div class="modal-content card glass-card" style="max-width: 500px;">
+            <h2 style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--card-border); padding-bottom: 0.75rem;">Quick Edit</h2>
+            <form id="quick-edit-form">
+                <input type="hidden" id="quick-edit-id">
+                <div class="form-group">
+                    <label>Person Name</label>
+                    <input type="text" id="quick-edit-person" required>
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="quick-edit-date" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label>Amount Paid</label>
+                        <input type="number" id="quick-edit-amount" min="0" step="0.01">
+                    </div>
+                    <div class="form-group half">
+                        <label>Payment Method</label>
+                        <select id="quick-edit-method">
+                            <option value="-">-</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Bank">Bank Transfer</option>
+                            <option value="Cheque">Cheque</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="button" id="quick-edit-cancel-btn" class="btn-secondary" style="margin: 0;">Cancel</button>
+                    <button type="submit" class="btn-primary" style="margin: 0;">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Print Options Modal -->
+    <div id="print-modal" class="modal-overlay hidden">
+        <div class="modal-content card glass-card" style="max-width: 400px; text-align: center;">
+            <h2 style="margin-bottom: 1rem; border: none;">Print Options</h2>
+            <p style="margin-bottom: 2rem; color: var(--text-secondary);">Select the type of invoice you want to print.</p>
+            <div style="display: flex; flex-direction: column; gap: 1rem; justify-content: center;">
+                <button id="print-normal-btn" class="btn-primary" style="margin: 0; width: 100%;">Normal Invoice</button>
+                <button id="print-urdu-btn" class="btn-primary" style="margin: 0; width: 100%; background-color: var(--green); font-family: 'Noto Nastaliq Urdu', serif;">اردو انوائس (Urdu Invoice)</button>
+                <button id="print-freight-btn" class="btn-primary" style="margin: 0; width: 100%; background-color: var(--card-border); color: var(--text-primary);">Freight Charges Only</button>
+                <button id="print-urdu-freight-btn" class="btn-primary" style="margin: 0; width: 100%; background-color: var(--card-border); color: var(--green); font-family: 'Noto Nastaliq Urdu', serif;">اردو کرایہ بل (Urdu Freight Only)</button>
+                <button id="print-cancel-btn" class="btn-secondary" style="margin-top: 1rem; width: 100%;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Copy Options Modal -->
+    <div id="copy-modal" class="modal-overlay hidden">
+        <div class="modal-content card glass-card" style="max-width: 400px; text-align: center;">
+            <h2 style="margin-bottom: 1rem; border: none;">Copy Image Options</h2>
+            <p style="margin-bottom: 2rem; color: var(--text-secondary);">Select the type of invoice you want to copy as an image.</p>
+            <div style="display: flex; flex-direction: column; gap: 1rem; justify-content: center;">
+                <button id="copy-normal-btn" class="btn-primary" style="margin: 0; width: 100%;">Normal Invoice</button>
+                <button id="copy-urdu-btn" class="btn-primary" style="margin: 0; width: 100%; background-color: var(--green); font-family: 'Noto Nastaliq Urdu', serif;">اردو انوائس (Urdu Invoice)</button>
+                <button id="copy-freight-btn" class="btn-primary" style="margin: 0; width: 100%; background-color: var(--card-border); color: var(--text-primary);">Freight Charges Only</button>
+                <button id="copy-urdu-freight-btn" class="btn-primary" style="margin: 0; width: 100%; background-color: var(--card-border); color: var(--green); font-family: 'Noto Nastaliq Urdu', serif;">اردو کرایہ بل (Urdu Freight Only)</button>
+                <button id="copy-cancel-btn" class="btn-secondary" style="margin-top: 1rem; width: 100%;">Cancel</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="theme.js"></script>
+    <script src="invoices.js"></script>
+    <script src="i18n.js"></script>
+</body>
+
+</html>

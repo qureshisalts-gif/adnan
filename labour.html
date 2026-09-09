@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Labour Panel - TrackFlow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <main class="container">
+        <header class="top-nav"
+            style="display: flex; justify-content: space-between; margin-bottom: 2rem; align-items: center;">
+            <h1 style="font-size: 2rem;">Labour Management</h1>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <div class="nav-controls" style="display: flex; gap: 0.5rem; align-items: center;">
+                    <button id="lang-toggle-btn" class="icon-btn"
+                        style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); cursor: pointer; display: flex; justify-content: center; align-items: center; font-family: 'Noto Nastaliq Urdu', serif; font-weight: 600;">اردو</button>
+                    <button id="theme-toggle-btn" class="icon-btn"
+                        style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); cursor: pointer; display: flex; justify-content: center; align-items: center;">
+                        <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                        <svg class="sun-icon hidden" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                    </button>
+                </div>
+                <a href="index.html" class="btn-primary"
+                    style="width: auto; margin-top: 0; padding: 0.5rem 1.5rem; border-radius: 20px; text-decoration: none; display: inline-block;">Back
+                    to main panal</a>
+            </div>
+        </header>
+
+        <section class="form-section">
+            <div class="card glass-card">
+                <h2>Labour Details</h2>
+                <div class="form-row" style="margin-bottom: 1.5rem;">
+                    <div class="form-group half">
+                        <label>Date</label>
+                        <input type="date" id="labour-date">
+                    </div>
+                    <div class="form-group half">
+                        <label>Labourer Name</label>
+                        <input type="text" id="labour-name" placeholder="e.g. Ali...">
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--primary-color);">Work Done</h3>
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label>Item</label>
+                        <select id="labour-item">
+                            <option value="">Select an item...</option>
+                            <!-- Items populated from JS -->
+                        </select>
+                    </div>
+                    <div class="form-group half">
+                        <label>Quantity</label>
+                        <input type="number" id="labour-qty" min="1" value="0">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label>Labour Rate (per unit)</label>
+                        <input type="number" id="labour-rate" min="0" step="0.01" value="0">
+                    </div>
+                    <div class="form-group half">
+                        <label>Total Charges</label>
+                        <input type="text" id="labour-total" value="0.00" readonly>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--primary-color);">Payment</h3>
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label>Amount Paid</label>
+                        <input type="number" id="labour-paid" min="0" step="0.01" value="0">
+                    </div>
+                    <div class="form-group half">
+                        <label>Payment Method</label>
+                        <select id="labour-payment-method">
+                            <option value="Cash">Cash</option>
+                            <option value="Bank">Bank Transfer</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 1rem;">
+                    <label>Remaining Balance for Labourer</label>
+                    <input type="text" id="labour-balance" value="0.00" readonly>
+                    <small style="color: var(--text-secondary);">Negative value means we owe them.</small>
+                </div>
+
+                <button id="save-labour-btn" class="btn-gradient"
+                    style="margin-top: 1.5rem; width: auto; padding: 0.75rem 2rem;">Save Labour Record</button>
+            </div>
+        </section>
+
+        <!-- Labourer History Section -->
+        <section id="labour-history-section" class="history-section hidden">
+            <div class="card glass-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h2>History for <span id="history-labour-name" class="text-primary"></span></h2>
+                </div>
+                <div class="table-container">
+                    <table id="history-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Details</th>
+                                <th>Amount</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-list">
+                        </tbody>
+                    </table>
+                </div>
+                <div id="history-empty-state" class="empty-state hidden">
+                    <p>No history found for this labourer.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Alert/Confirm Modal -->
+    <div id="dialog-modal" class="modal-overlay hidden">
+        <div class="modal-content card glass-card" style="max-width: 400px; text-align: center;">
+            <h2 id="dialog-title" style="margin-bottom: 1rem; border: none;">Notice</h2>
+            <p id="dialog-message" style="margin-bottom: 2rem; color: var(--text-secondary);"></p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button id="dialog-cancel-btn" class="btn-secondary"
+                    style="margin: 0; width: auto; padding: 0.75rem 1.5rem;">Cancel</button>
+                <button id="dialog-ok-btn" class="btn-primary"
+                    style="margin: 0; width: auto; padding: 0.75rem 1.5rem;">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="theme.js"></script>
+    <script src="labour.js"></script>
+    <script src="i18n.js"></script>
+</body>
+
+</html>

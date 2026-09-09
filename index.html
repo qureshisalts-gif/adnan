@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory & Sales Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <main class="container">
+        <header class="top-nav"
+            style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+            <a href="labour.html" class="btn-secondary"
+                style="width: auto; margin: 0; padding: 0.5rem 1rem; border-radius: 20px; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; background: var(--card-bg); color: var(--text-primary); border: 1px solid var(--card-border);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <span style="font-weight: 600;">Labour</span>
+            </a>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <div class="nav-controls" style="display: flex; gap: 0.5rem; align-items: center;">
+                <a href="invoices.html" class="btn-secondary"
+                    style="width: auto; margin: 0; padding: 0.5rem 1rem; border-radius: 20px; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; background: var(--card-bg); color: var(--text-primary); border: 1px solid var(--card-border);">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    <span style="font-weight: 600;" data-i18n="nav_invoices">Invoices</span>
+                </a>
+                <button id="lang-toggle-btn" class="icon-btn"
+                    style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); cursor: pointer; display: flex; justify-content: center; align-items: center; font-family: 'Noto Nastaliq Urdu', serif; font-weight: 600;">اردو</button>
+                <button id="theme-toggle-btn" class="icon-btn"
+                    style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); cursor: pointer; display: flex; justify-content: center; align-items: center;">
+                    <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg class="sun-icon hidden" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+            <a href="admin.html" class="btn-primary"
+                style="width: auto; margin-top: 0; padding: 0.5rem 1.5rem; border-radius: 20px; text-decoration: none; display: inline-block;"
+                data-i18n="nav_admin">Admin Panel</a>
+        </div>
+        </header>
+
+
+
+        <!-- Transaction Details -->
+        <div class="card glass-card"
+            style="margin-bottom: 0; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">
+            <h2 style="font-size: 1.25rem; margin-bottom: 1rem;" data-i18n="txn_details">Transaction Details</h2>
+            <div class="form-row">
+                <div class="form-group half">
+                    <label data-i18n="txn_type">Type</label>
+                    <select id="txn-type">
+                        <option value="sale" data-i18n="sale">Sale</option>
+                        <option value="purchase" data-i18n="purchase">Purchase</option>
+                    </select>
+                </div>
+                <div class="form-group half">
+                    <label data-i18n="date">Date</label>
+                    <input type="date" id="txn-date">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label data-i18n="person_name">Person Name</label>
+                    <input type="text" id="txn-person" placeholder="e.g. John Doe" data-i18n="person_placeholder">
+                </div>
+            </div>
+        </div>
+
+        <!-- Person History (Dynamic) -->
+        <div id="person-history-section" class="card glass-card hidden"
+            style="margin-bottom: 0; border-radius: 0; border-top: none;">
+            <h2
+                style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 1rem; border: none; padding-bottom: 0;">
+                <span data-i18n="history_for">History for:</span> <span id="history-person-name"
+                    class="highlight"></span></h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr style="text-transform: uppercase; font-size: 0.8rem; color: var(--text-secondary);">
+                            <th data-i18n="th_date">Date</th>
+                            <th data-i18n="th_type">Type</th>
+                            <th data-i18n="th_item">Item</th>
+                            <th>Qty</th>
+                            <th>Rate</th>
+                            <th>Total</th>
+                            <th data-i18n="th_actions">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-list">
+                        <!-- History inserted here -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="history-empty-state" class="empty-state hidden">
+                <p data-i18n="no_past_txns">No past transactions found for this person.</p>
+            </div>
+        </div>
+
+        <!-- Add Item Section -->
+        <div class="card glass-card"
+            style="margin-bottom: 0; border-radius: 0; border-top: none; border-left: 4px solid var(--accent-color);">
+            <h2 style="color: var(--accent-color); font-size: 1.25rem;" data-i18n="btn_add_item">Add Item</h2>
+
+            <div class="form-row" style="align-items: flex-end;">
+                <div class="form-group" style="flex: 3; margin-bottom: 0;">
+                    <label style="font-size: 0.8rem; color: #64748b;">Item</label>
+                    <select id="item-select" style="background-color: white; border-radius: 6px; padding: 0.5rem 1rem;">
+                        <option value="" data-i18n="select_item">Select an item...</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                    <label data-i18n="quantity" style="font-size: 0.8rem; color: #64748b;">Quantity</label>
+                    <input type="number" id="item-qty" value="0" min="0"
+                        style="background-color: white; border-radius: 6px; padding: 0.5rem 1rem;">
+                </div>
+            </div>
+
+            <!-- Item Stock Summary -->
+            <div id="item-stock-summary-section" class="card"
+                style="background-color: #f1f5f9; border-radius: 8px; margin-top: 1.5rem; padding: 1.5rem; border: none; box-shadow: none;">
+                <h3 style="font-size: 1rem; color: #1e293b; margin-bottom: 1rem; font-weight: 600;">Item Stock Summary
+                </h3>
+                <div class="table-container" style="background: transparent; box-shadow: none;">
+                    <table style="background: transparent;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid #e2e8f0; text-align: left;">
+                                <th
+                                    style="color: #64748b; font-size: 0.75rem; text-transform: uppercase; background: transparent;">
+                                    Item</th>
+                                <th
+                                    style="color: #64748b; font-size: 0.75rem; text-transform: uppercase; background: transparent;">
+                                    Stock In</th>
+                                <th
+                                    style="color: #64748b; font-size: 0.75rem; text-transform: uppercase; background: transparent;">
+                                    Stock Out</th>
+                                <th
+                                    style="color: #64748b; font-size: 0.75rem; text-transform: uppercase; background: transparent;">
+                                    Current Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stock-summary-list">
+                            <tr>
+                                <td colspan="4"
+                                    style="text-align: center; color: #64748b; font-size: 0.9rem; padding: 1.5rem 0; border-bottom: 1px solid #e2e8f0;">
+                                    Search for an item or person to view stock summary</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Add to List Bar -->
+            <div class="form-row" style="margin-top: 1.5rem; justify-content: space-between; align-items: flex-end;">
+                <div style="display: flex; gap: 1.5rem; align-items: center;">
+                    <div
+                        style="background-color: #ffffff; border: 1px dashed rgba(99, 102, 241, 0.4); padding: 0.75rem 1rem; border-radius: 8px;">
+                        <div style="color: var(--accent-color); font-weight: 700; font-size: 1.1rem;">Item Total: <span
+                                id="cart-item-total">0.00</span></div>
+                        <div style="color: #64748b; font-size: 0.75rem; margin-top: 0.25rem;">Total Weight: <span
+                                id="cart-item-weight">0.00 (Kg)</span></div>
+                    </div>
+                    <div class="form-group" style="margin: 0;">
+                        <label style="font-size: 0.75rem; color: #64748b;">Freight Charges</label>
+                        <input type="number" id="freight-charges" value="0" min="0"
+                            style="width: 120px; padding: 0.5rem; height: auto;">
+                    </div>
+                </div>
+
+                <button id="add-to-list-btn" class="btn-primary"
+                    style="background-color: #f3e8ff; color: #8b5cf6; border: 1px dashed #8b5cf6; width: auto; padding: 0.75rem 2rem; border-radius: 8px; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; margin-top: 0; transition: all 0.2s;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="16"></line>
+                        <line x1="8" y1="12" x2="16" y2="12"></line>
+                    </svg>
+                    Add to List
+                </button>
+            </div>
+        </div>
+
+        <!-- Current Cart Section -->
+        <div id="cart-section" class="card glass-card hidden"
+            style="margin-bottom: 0; border-radius: 0; border-top: none;">
+            <h2 style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 1rem;">Current Cart</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Qty</th>
+                            <th>Rate</th>
+                            <th>Total</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cart-list">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Financials Section -->
+        <div class="card glass-card"
+            style="margin-bottom: 0; border-top-left-radius: 0; border-top-right-radius: 0; border-top: none;">
+            <h2 style="color: var(--accent-color); font-size: 1.25rem;" data-i18n="financials">Financials</h2>
+
+            <div class="form-row">
+                <div class="form-group half">
+                    <label data-i18n="items_total">Items Total</label>
+                    <input type="text" id="fin-items-total" value="0.00" readonly>
+                </div>
+                <div class="form-group half">
+                    <label data-i18n="prev_balance">Previous Balance</label>
+                    <input type="text" id="fin-prev-balance" value="0.00" class="text-red"
+                        style="color: var(--red); font-weight: 600;" readonly>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 1rem;">
+                <label data-i18n="grand_total">Grand Total Amount</label>
+                <input type="text" id="fin-grand-total" value="0.00" class="highlight-input" readonly>
+            </div>
+
+            <div class="form-row" style="margin-top: 1rem;">
+                <div class="form-group half">
+                    <label data-i18n="amount_paid">Amount Paid</label>
+                    <input type="number" id="fin-amount-paid" value="0" min="0">
+                </div>
+                <div class="form-group half">
+                    <label data-i18n="payment_method">Payment Method</label>
+                    <select id="fin-payment-method">
+                        <option value="-">-</option>
+                        <option value="Cash" data-i18n="cash">Cash</option>
+                        <option value="Bank" data-i18n="bank">Bank Transfer</option>
+                        <option value="Cheque" data-i18n="cheque">Cheque</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 1rem;">
+                <label data-i18n="remaining_balance">Remaining Balance</label>
+                <input type="text" id="fin-remaining-balance" value="0.00" readonly>
+            </div>
+
+            <button id="save-txn-btn" class="btn-gradient" style="margin-top: 1rem; width: auto; padding: 0.75rem 2rem;"
+                data-i18n="save_txn">Save Transaction</button>
+        </div>
+    </main>
+
+    <!-- Alert/Confirm Modal -->
+    <div id="dialog-modal" class="modal-overlay hidden">
+        <div class="modal-content card glass-card" style="max-width: 400px; text-align: center;">
+            <h2 id="dialog-title" style="margin-bottom: 1rem; border: none;" data-i18n="dialog_notice">Notice</h2>
+            <p id="dialog-message" style="margin-bottom: 2rem; color: var(--text-secondary);"></p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button id="dialog-cancel-btn" class="btn-secondary"
+                    style="margin: 0; width: auto; padding: 0.75rem 1.5rem;" data-i18n="dialog_cancel">Cancel</button>
+                <button id="dialog-ok-btn" class="btn-primary" style="margin: 0; width: auto; padding: 0.75rem 1.5rem;"
+                    data-i18n="dialog_ok">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Copy Options Modal -->
+    <div id="copy-modal" class="modal-overlay hidden">
+        <div class="modal-content card glass-card" style="max-width: 400px; text-align: center;">
+            <h2 style="margin-bottom: 1rem; border: none;">Copy Image Options</h2>
+            <p style="margin-bottom: 2rem; color: var(--text-secondary);">Select the type of invoice you want to copy as an image.</p>
+            <div style="display: flex; flex-direction: column; gap: 1rem; justify-content: center;">
+                <button id="copy-normal-btn" class="btn-primary" style="margin: 0; width: 100%;">Normal Invoice</button>
+                <button id="copy-urdu-btn" class="btn-primary" style="margin: 0; width: 100%; background-color: var(--green); font-family: 'Noto Nastaliq Urdu', serif;">اردو انوائس (Urdu Invoice)</button>
+                <button id="copy-freight-btn" class="btn-primary" style="margin: 0; width: 100%; background-color: var(--card-border); color: var(--text-primary);">Freight Charges Only</button>
+                <button id="copy-urdu-freight-btn" class="btn-primary" style="margin: 0; width: 100%; background-color: var(--card-border); color: var(--green); font-family: 'Noto Nastaliq Urdu', serif;">اردو کرایہ بل (Urdu Freight Only)</button>
+                <button id="copy-cancel-btn" class="btn-secondary" style="margin-top: 1rem; width: 100%;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="theme.js"></script>
+    <script src="app.js"></script>
+    <script src="i18n.js"></script>
+</body>
+
+</html>
