@@ -210,6 +210,7 @@ editForm.addEventListener('submit', (e) => {
                 }
             });
             localStorage.setItem('transactions', JSON.stringify(transactions));
+            if (window.syncTransactionsToCloud) window.syncTransactionsToCloud(transactions);
             item.name = newName;
         }
 
@@ -224,6 +225,7 @@ editForm.addEventListener('submit', (e) => {
 // Save Items to LocalStorage
 const saveItems = () => {
     localStorage.setItem('items', JSON.stringify(items));
+    if (window.syncItemsToCloud) window.syncItemsToCloud(items);
 };
 
 // Delivery System Elements
@@ -287,6 +289,7 @@ window.toggleDelivery = (id, isDelivered) => {
     if (txn) {
         txn.delivered = isDelivered;
         localStorage.setItem('transactions', JSON.stringify(transactions));
+        if (window.syncTransactionsToCloud) window.syncTransactionsToCloud(transactions);
         renderDeliveries(deliverySearch ? deliverySearch.value : '');
     }
 };
@@ -300,3 +303,12 @@ if (deliverySearch) {
 // Initial Render
 renderItems();
 renderDeliveries();
+
+if (window.fetchDataFromCloudAndRender) {
+    window.fetchDataFromCloudAndRender(() => {
+        transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+        items = JSON.parse(localStorage.getItem('items')) || [];
+        renderItems(itemSearch.value);
+        if (deliverySearch) renderDeliveries(deliverySearch.value);
+    });
+}

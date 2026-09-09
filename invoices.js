@@ -208,6 +208,7 @@ window.deleteTransaction = (txnId) => {
     showConfirm('Delete Transaction', 'Are you sure you want to delete this invoice?', 'Delete', 'var(--red)', () => {
         transactions = transactions.filter(t => t.txnId !== txnId && t.id !== txnId);
         localStorage.setItem('transactions', JSON.stringify(transactions));
+        if (window.deleteTransactionFromCloud) window.deleteTransactionFromCloud(txnId);
         renderInvoices(invoiceSearch.value.trim());
     });
 };
@@ -218,6 +219,13 @@ invoiceSearch.addEventListener('input', (e) => {
 
 // Initial Render
 renderInvoices();
+
+if (window.fetchDataFromCloudAndRender) {
+    window.fetchDataFromCloudAndRender(() => {
+        transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+        renderInvoices(invoiceSearch.value.trim());
+    });
+}
 
 const printModal = document.getElementById('print-modal');
 const printNormalBtn = document.getElementById('print-normal-btn');
@@ -871,6 +879,7 @@ if (quickEditForm) {
         }
         
         localStorage.setItem('transactions', JSON.stringify(transactions));
+        if (window.syncTransactionsToCloud) window.syncTransactionsToCloud(transactions);
         renderInvoices(invoiceSearch.value.trim());
         quickEditModal.classList.add('hidden');
         currentEditTxnId = null;

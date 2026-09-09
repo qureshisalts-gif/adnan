@@ -407,6 +407,7 @@ saveTxnBtn.addEventListener('click', () => {
     }
 
     localStorage.setItem('transactions', JSON.stringify(transactions));
+    if (window.syncTransactionsToCloud) window.syncTransactionsToCloud(transactions);
 
     // Reset Form
     currentCart = [];
@@ -742,3 +743,14 @@ if (editTxnId) {
 
 updateItemTotals();
 renderCart();
+
+if (window.fetchDataFromCloudAndRender) {
+    window.fetchDataFromCloudAndRender(() => {
+        transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+        items = JSON.parse(localStorage.getItem('items')) || [];
+        
+        updateItemTotals();
+        renderCart();
+        renderHistory(txnPerson.value.trim());
+    });
+}
