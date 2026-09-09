@@ -48,7 +48,8 @@ window.syncItemsToCloud = async (localItems) => {
             id: i.id,
             name: i.name,
             stock: i.stock || 0,
-            avg_rate: i.avgRate || 0,
+            rate: i.rate || 0,
+            person_name: i.personName || '',
             unit: i.unit || 'Kg'
         }));
         
@@ -125,15 +126,19 @@ window.fetchDataFromCloudAndRender = async (renderCallback) => {
         }
         
         if (itms) {
-            const mappedItms = itms.map(i => ({
-                id: i.id,
-                name: i.name,
-                stock: parseFloat(i.stock) || 0,
-                avgRate: parseFloat(i.avg_rate) || 0,
-                unit: i.unit
-            }));
-            
             const localItms = JSON.parse(localStorage.getItem('items')) || [];
+            const mappedItms = itms.map(i => {
+                const localItem = localItms.find(l => l.id === i.id) || {};
+                return {
+                    id: i.id,
+                    name: i.name,
+                    stock: parseFloat(i.stock) || 0,
+                    rate: i.rate !== undefined ? parseFloat(i.rate) : (i.avg_rate !== undefined ? parseFloat(i.avg_rate) : (localItem.rate || 0)),
+                    personName: i.person_name !== undefined ? i.person_name : (localItem.personName || ''),
+                    unit: i.unit
+                };
+            });
+            
             if (localItms.length !== mappedItms.length || JSON.stringify(localItms) !== JSON.stringify(mappedItms)) {
                 localStorage.setItem('items', JSON.stringify(mappedItms));
                 // Update global reference if it exists
