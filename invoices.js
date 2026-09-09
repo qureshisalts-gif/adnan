@@ -416,7 +416,7 @@ window.printInvoice = (txnId, type = 'normal') => {
                 <tr>
                     <td style="padding: 10px; border-bottom: 1px solid #eee;">${index + 1}</td>
                     <td style="padding: 10px; border-bottom: 1px solid #eee;">${t.itemName || '-'}</td>
-                    <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">${qty}</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">${qty} <span style="font-size: 0.85em; color: #666;">${t.unit || 'Kg'}</span></td>
                     <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: ${isUrdu ? 'left' : 'right'};">${formatCurrency(price)}</td>
                     <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: ${isUrdu ? 'left' : 'right'};">${formatCurrency(itemTotal)}</td>
                 </tr>
@@ -631,7 +631,7 @@ window.copyInvoiceImage = async (txnId, type = 'normal') => {
                 <tr>
                     <td style="padding: 10px; border-bottom: 1px solid #eee;">${index + 1}</td>
                     <td style="padding: 10px; border-bottom: 1px solid #eee;">${t.itemName || '-'}</td>
-                    <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">${qty}</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">${qty} <span style="font-size: 0.85em; color: #666;">${t.unit || 'Kg'}</span></td>
                     <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: ${isUrdu ? 'left' : 'right'};">${formatCurrency(price)}</td>
                     <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: ${isUrdu ? 'left' : 'right'};">${formatCurrency(itemTotal)}</td>
                 </tr>

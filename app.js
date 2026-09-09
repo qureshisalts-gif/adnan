@@ -10,6 +10,7 @@ const txnPerson = document.getElementById('txn-person');
 const itemSelect = document.getElementById('item-select');
 const itemQty = document.getElementById('item-qty');
 const itemRateMain = document.getElementById('item-rate-main');
+const itemUnitMain = document.getElementById('item-unit-main');
 const cartItemTotal = document.getElementById('cart-item-total');
 const cartItemWeight = document.getElementById('cart-item-weight');
 const freightChargesInput = document.getElementById('freight-charges');
@@ -104,8 +105,13 @@ const calculateItemStock = (itemName) => {
     let stockOut = 0;
     transactions.forEach(t => {
         if (t.itemName === itemName) {
-            if (t.type === 'purchase') stockIn += t.quantity;
-            else if (t.type === 'sale') stockOut += t.quantity;
+            let qtyInKg = t.quantity;
+            const u = (t.unit || '').toLowerCase();
+            if (u === 'mun' || u === 'bag (40kg)') qtyInKg = t.quantity * 40;
+            else if (u === 'bag (50kg)') qtyInKg = t.quantity * 50;
+
+            if (t.type === 'purchase') stockIn += qtyInKg;
+            else if (t.type === 'sale') stockOut += qtyInKg;
         }
     });
     return { stockIn, stockOut, currentStock: stockIn - stockOut };
@@ -171,11 +177,10 @@ const updateItemTotals = () => {
     const freight = parseFloat(freightChargesInput.value) || 0;
 
     let rate = parseFloat(itemRateMain.value) || 0;
-    let unit = 'Kg';
+    let unit = itemUnitMain ? itemUnitMain.value : 'Kg';
     let name = '';
     const selectedOption = itemSelect.options[itemSelect.selectedIndex];
     if (selectedOption.value) {
-        unit = selectedOption.getAttribute('data-unit') || 'Kg';
         name = selectedOption.getAttribute('data-name');
     }
 
@@ -199,8 +204,10 @@ itemSelect.addEventListener('change', () => {
     const selectedOption = itemSelect.options[itemSelect.selectedIndex];
     if (selectedOption.value) {
         itemRateMain.value = selectedOption.getAttribute('data-rate') || 0;
+        if (itemUnitMain) itemUnitMain.value = selectedOption.getAttribute('data-unit') || 'Kg';
     } else {
         itemRateMain.value = 0;
+        if (itemUnitMain) itemUnitMain.value = 'Kg';
     }
     updateItemTotals();
 });
@@ -326,7 +333,7 @@ addToListBtn.addEventListener('click', () => {
 
     const itemName = selectedOption.getAttribute('data-name');
     const rate = parseFloat(itemRateMain.value) || 0;
-    const unit = selectedOption.getAttribute('data-unit') || 'Kg';
+    const unit = itemUnitMain ? itemUnitMain.value : (selectedOption.getAttribute('data-unit') || 'Kg');
     const qty = parseFloat(itemQty.value);
     const freight = parseFloat(freightChargesInput.value) || 0;
 
@@ -347,6 +354,7 @@ addToListBtn.addEventListener('click', () => {
     itemSelect.value = '';
     itemQty.value = '0';
     itemRateMain.value = '0';
+    if (itemUnitMain) itemUnitMain.value = 'Kg';
     freightChargesInput.value = '0';
     updateItemTotals();
     renderCart();
@@ -577,7 +585,7 @@ window.copyInvoiceImage = async (txnId, type = 'normal') => {
                 <tr>
                     <td style="padding: 10px; border-bottom: 1px solid #eee;">${index + 1}</td>
                     <td style="padding: 10px; border-bottom: 1px solid #eee;">${t.itemName || '-'}</td>
-                    <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">${qty}</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">${qty} <span style="font-size: 0.85em; color: #666;">${t.unit || 'Kg'}</span></td>
                     <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: ${isUrdu ? 'left' : 'right'};">${formatCurrency(price)}</td>
                     <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: ${isUrdu ? 'left' : 'right'};">${formatCurrency(itemTotal)}</td>
                 </tr>

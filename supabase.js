@@ -48,8 +48,7 @@ window.syncItemsToCloud = async (localItems) => {
             id: i.id,
             name: i.name,
             stock: i.stock || 0,
-            rate: i.rate || 0,
-            person_name: i.personName || '',
+            avg_rate: i.rate || 0,
             unit: i.unit || 'Kg'
         }));
         
@@ -133,8 +132,8 @@ window.fetchDataFromCloudAndRender = async (renderCallback) => {
                     id: i.id,
                     name: i.name,
                     stock: parseFloat(i.stock) || 0,
-                    rate: i.rate !== undefined ? parseFloat(i.rate) : (i.avg_rate !== undefined ? parseFloat(i.avg_rate) : (localItem.rate || 0)),
-                    personName: i.person_name !== undefined ? i.person_name : (localItem.personName || ''),
+                    rate: localItem.rate !== undefined ? localItem.rate : (parseFloat(i.avg_rate) || 0),
+                    personName: localItem.personName || '',
                     unit: i.unit
                 };
             });

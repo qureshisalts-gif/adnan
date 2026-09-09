@@ -86,14 +86,21 @@ const renderItems = (filterText = '') => {
         itemTable.classList.remove('hidden');
 
         filteredItems.forEach(item => {
-            // Calculate Stock
+            // Calculate Stock with Unit Conversion
+            const getQtyInKg = (t) => {
+                const u = (t.unit || '').toLowerCase();
+                if (u === 'mun' || u === 'bag (40kg)') return t.quantity * 40;
+                if (u === 'bag (50kg)') return t.quantity * 50;
+                return t.quantity;
+            };
+
             const stockIn = transactions
                 .filter(t => t.itemName === item.name && t.type === 'purchase')
-                .reduce((sum, t) => sum + t.quantity, 0);
+                .reduce((sum, t) => sum + getQtyInKg(t), 0);
 
             const stockOut = transactions
                 .filter(t => t.itemName === item.name && t.type === 'sale')
-                .reduce((sum, t) => sum + t.quantity, 0);
+                .reduce((sum, t) => sum + getQtyInKg(t), 0);
 
             const currentStock = stockIn - stockOut;
             const stockClass = currentStock < 0 ? 'text-red' : (currentStock > 0 ? 'text-green' : '');
