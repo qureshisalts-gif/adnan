@@ -1407,7 +1407,7 @@ updateItemTotals();
 renderCart();
 
 if (window.fetchDataFromCloudAndRender) {
-    window.fetchDataFromCloudAndRender(() => {
+    const renderCallback = () => {
         transactions = JSON.parse(localStorage.getItem('transactions')) || [];
         items = JSON.parse(localStorage.getItem('items')) || [];
 

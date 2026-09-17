@@ -127,7 +127,7 @@ const renderInvoices = (filterText = '') => {
 
         if (t.type.startsWith('payment') || t.type === 'labour_payment') {
             group.amountPaid += (t.quantity * t.price);
-            if (t.itemName.includes('/')) {
+            if (t.itemName && typeof t.itemName === 'string' && t.itemName.includes('/')) {
                 group.paymentMethod = t.itemName.split('/')[1].trim();
             }
         } else {
@@ -300,10 +300,16 @@ if (filterLegerBtn) {
 renderInvoices();
 
 if (window.fetchDataFromCloudAndRender) {
-    window.fetchDataFromCloudAndRender(() => {
+    const renderCallback = () => {
         transactions = JSON.parse(localStorage.getItem('transactions')) || [];
         renderInvoices(invoiceSearch.value.trim());
-    });
+    };
+
+    window.fetchDataFromCloudAndRender(renderCallback);
+    
+    if (window.setupRealtimeSync) {
+        window.setupRealtimeSync(renderCallback);
+    }
 }
 
 const printModal = document.getElementById('print-modal');
