@@ -1460,12 +1460,7 @@ if (legerBtn && legerModal) {
         return bal;
     };
 
-    const onPersonChange = () => {
-        const resolved = resolvePersonName(legerPerson.value);
-        if (resolved !== legerPerson.value) {
-            legerPerson.value = resolved;
-        }
-
+    const updateBalanceOnInput = () => {
         const name = legerPerson.value.trim();
         if (!name) {
             legerCurrentBalance.value = '';
@@ -1476,6 +1471,14 @@ if (legerBtn && legerModal) {
         const currentBal = calculatePersonBalance(name);
         legerCurrentBalance.value = currentBal.toFixed(2);
         updateNewBalance();
+    };
+
+    const onPersonChange = () => {
+        const resolved = resolvePersonName(legerPerson.value);
+        if (resolved !== legerPerson.value) {
+            legerPerson.value = resolved;
+        }
+        updateBalanceOnInput();
     };
 
     const updateNewBalance = () => {
@@ -1491,9 +1494,7 @@ if (legerBtn && legerModal) {
         legerAmount.value = amountPaid.toFixed(2);
     };
 
-    legerPerson.addEventListener('input', (e) => {
-        onPersonChange(e);
-    });
+    legerPerson.addEventListener('input', updateBalanceOnInput);
     legerPerson.addEventListener('change', onPersonChange);
 
     legerCurrentBalance.addEventListener('input', updateNewBalance);
