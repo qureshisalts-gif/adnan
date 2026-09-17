@@ -1415,8 +1415,18 @@ if (window.fetchDataFromCloudAndRender) {
 
         updateItemTotals();
         renderCart();
-        renderHistory(txnPerson.value.trim());
-    });
+        
+        if (typeof txnPerson !== 'undefined' && txnPerson) {
+            renderHistory(txnPerson.value.trim());
+            initPersonDatalist();
+        }
+    };
+
+    window.fetchDataFromCloudAndRender(renderCallback);
+    
+    if (window.setupRealtimeSync) {
+        window.setupRealtimeSync(renderCallback);
+    }
 }
 
 // Leger Payment Modal Logic
