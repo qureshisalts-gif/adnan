@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Qureshi Salts</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="auth.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+
+<body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <main class="container">
+        <header class="top-nav"
+            style="display: flex; justify-content: space-between; margin-bottom: 2rem; align-items: center;">
+            <h1 style="font-size: 2rem;" data-i18n="dash_title">Business Dashboard</h1>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <div class="nav-controls" style="display: flex; gap: 0.5rem; align-items: center;">
+                    <a href="labour.html" class="btn-secondary"
+                        style="width: auto; margin: 0; padding: 0.5rem 1rem; border-radius: 20px; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; background: var(--card-bg); color: var(--text-primary); border: 1px solid var(--card-border);">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        <span style="font-weight: 600;">Labour</span>
+                    </a>
+                    <button id="leger-btn" class="btn-secondary"
+                        style="width: auto; margin: 0; padding: 0.5rem 1rem; border-radius: 20px; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; background: var(--card-bg); color: var(--text-primary); border: 1px solid var(--card-border); cursor: pointer;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                            <path d="M7 15h0M2 9h20"></path>
+                        </svg>
+                        <span style="font-weight: 600;">Leger Payment</span>
+                    </button>
+                    <a href="invoices.html" class="btn-secondary"
+                        style="width: auto; margin: 0; padding: 0.5rem 1rem; border-radius: 20px; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; background: var(--card-bg); color: var(--text-primary); border: 1px solid var(--card-border);">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        <span style="font-weight: 600;" data-i18n="nav_invoices">Invoices</span>
+                    </a>
+                    <button id="lang-toggle-btn" class="icon-btn"
+                        style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); cursor: pointer; display: flex; justify-content: center; align-items: center; font-family: 'Noto Nastaliq Urdu', serif; font-weight: 600;">اردو</button>
+                    <button id="theme-toggle-btn" class="icon-btn"
+                        style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); cursor: pointer; display: flex; justify-content: center; align-items: center;">
+                        <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                        <svg class="sun-icon hidden" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                    </button>
+                </div>
+                <a href="index.html" class="btn-primary"
+                    style="width: auto; margin-top: 0; padding: 0.5rem 1.5rem; border-radius: 20px; text-decoration: none; display: inline-block;"
+                    data-i18n="nav_back">Back to main panal</a>
+            </div>
+        </header>
+
+        <div class="dashboard-metrics"
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+            <div class="metric-card"
+                style="background: linear-gradient(135deg, #f59e0b, #ea580c); color: white; padding: 1.5rem; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                <div style="font-size: 0.8rem; font-weight: 700; margin-bottom: 0.5rem; opacity: 0.9;">Total Remaining
+                    Payments</div>
+                <div id="metric-remaining" style="font-size: 1.8rem; font-weight: 700;">0.00</div>
+            </div>
+            <div class="metric-card"
+                style="background: linear-gradient(135deg, #ec4899, #be123c); color: white; padding: 1.5rem; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                <div style="font-size: 0.8rem; font-weight: 700; margin-bottom: 0.5rem; opacity: 0.9;">Total Payables
+                    (To Give)</div>
+                <div id="metric-payables" style="font-size: 1.8rem; font-weight: 700;">0.00</div>
+            </div>
+        </div>
+
+        <div class="balances-container"
+            style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+            <!-- Outstanding Balances -->
+            <div class="card glass-card"
+                style="border: 1px solid rgba(139, 92, 246, 0.4); box-shadow: 0 4px 20px -2px rgba(139, 92, 246, 0.15);">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--card-border); padding-bottom: 0.75rem;">
+                    <h2 style="margin-bottom: 0; border: none; padding: 0;">Outstanding Balances (To Receive)</h2>
+                    <input type="text" id="outstanding-search" placeholder="Search by Person Name..."
+                        style="width: 250px; padding: 0.5rem; border-radius: 6px; border: 1px solid var(--card-border);">
+                </div>
+                <div class="table-container">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr
+                                style="text-transform: uppercase; font-size: 0.8rem; color: var(--text-secondary); text-align: left; border-bottom: 1px solid var(--card-border);">
+                                <th style="padding: 1rem;">Person Name</th>
+                                <th style="padding: 1rem;">Paid Amount</th>
+                                <th style="padding: 1rem;">Remaining Amount</th>
+                                <th style="padding: 1rem;">Statement</th>
+                            </tr>
+                        </thead>
+                        <tbody id="outstanding-list"></tbody>
+                    </table>
+                </div>
+                <div id="outstanding-empty-state" class="empty-state">
+                    <p>No outstanding balances.</p>
+                </div>
+            </div>
+
+            <!-- Payables -->
+            <div class="card glass-card"
+                style="border: 1px solid rgba(236, 72, 153, 0.4); box-shadow: 0 4px 20px -2px rgba(236, 72, 153, 0.15);">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--card-border); padding-bottom: 0.75rem;">
+                    <h2 style="margin-bottom: 0; border: none; padding: 0;">Payables (To Give)</h2>
+                    <input type="text" id="payables-search" placeholder="Search by Person Name..."
+                        style="width: 250px; padding: 0.5rem; border-radius: 6px; border: 1px solid var(--card-border);">
+                </div>
+                <div class="table-container">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr
+                                style="text-transform: uppercase; font-size: 0.8rem; color: var(--text-secondary); text-align: left; border-bottom: 1px solid var(--card-border);">
+                                <th style="padding: 1rem;">Person Name</th>
+                                <th style="padding: 1rem;">Given Amount</th>
+                                <th style="padding: 1rem;">To Give (Payable)</th>
+                                <th style="padding: 1rem;">Statement</th>
+                            </tr>
+                        </thead>
+                        <tbody id="payables-list"></tbody>
+                    </table>
+                </div>
+                <div id="payables-empty-state" class="empty-state">
+                    <p>No payables.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <section class="form-section">
+                <div class="card glass-card">
+                    <h2 data-i18n="add_new_item">Add New Item</h2>
+                    <form id="item-form">
+                        <div class="form-group"
+                            style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px dashed var(--card-border);">
+                            <label for="item-person" data-i18n="person_name"
+                                style="font-weight: 600; color: var(--accent-color);">Person Name</label>
+                            <input type="text" id="item-person" list="admin-person-list" placeholder="e.g. John Doe">
+                            <datalist id="admin-person-list"></datalist>
+                        </div>
+                        <div class="form-group">
+                            <label for="item-name">Item Name</label>
+                            <input type="text" id="item-name" placeholder="e.g. black salt" data-i18n="item_placeholder"
+                                required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group half">
+                                <label for="item-rate" data-i18n="rate">Rate (Price)</label>
+                                <input type="number" id="item-rate" min="0" step="0.01" placeholder="0.00">
+                            </div>
+                            <div class="form-group half">
+                                <label for="item-unit" data-i18n="unit">Unit</label>
+                                <select id="item-unit" required>
+                                    <option value="Kg">Kg</option>
+                                    <option value="Pcs">Pcs</option>
+                                    <option value="Ltr">Ltr</option>
+                                    <option value="Mun">Mun</option>
+                                    <option value="Bag (40kg)">Bag (40kg)</option>
+                                    <option value="Bag (50kg)">Bag (50kg)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row" style="margin-top: 1.5rem; justify-content: flex-end;">
+                            <button type="submit" id="add-to-pending-btn" class="btn-primary"
+                                style="background-color: #f3e8ff; color: #8b5cf6; border: 1px dashed #8b5cf6; width: auto; padding: 0.75rem 2rem; border-radius: 8px; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s;"
+                                data-i18n="btn_add_to_list">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="16"></line>
+                                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                                </svg>
+                                Add to List
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Pending Items Cart -->
+                    <div id="pending-items-section" class="hidden"
+                        style="margin-top: 2rem; border-top: 1px solid var(--card-border); padding-top: 1.5rem;">
+                        <h3 style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 1rem;">Pending Items
+                            (<span id="pending-person-name" class="highlight"></span>)</h3>
+                        <div class="table-container" style="box-shadow: none; border: 1px solid var(--card-border);">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Item Name</th>
+                                        <th>Rate</th>
+                                        <th>Unit</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pending-items-list">
+                                </tbody>
+                            </table>
+                        </div>
+                        <button id="save-pending-items-btn" class="btn-gradient mt-4"
+                            style="width: auto; padding: 0.75rem 2rem;">Save All Items</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="history-section">
+                <div class="card glass-card">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--card-border); padding-bottom: 0.75rem;">
+                        <h2 style="margin-bottom: 0; border: none; padding: 0;">Item List</h2>
+                        <input type="text" id="item-search" placeholder="Search item or person..."
+                            style="width: 250px;">
+                    </div>
+                    <div class="table-container" style="max-height: 250px;">
+                        <table id="item-table">
+                            <thead>
+                                <tr>
+                                    <th>Item Name</th>
+                                    <th data-i18n="th_rate">Rate</th>
+                                    <th data-i18n="unit">Unit</th>
+                                    <th data-i18n="th_stockin">Stock In</th>
+                                    <th data-i18n="th_stockout">Stock Out</th>
+                                    <th data-i18n="th_currentstock">Current Stock</th>
+                                    <th data-i18n="th_action">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="item-list">
+                                <!-- Items will be inserted here dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="item-empty-state" class="empty-state">
+                        <p>No items found. Add one to get started.</p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="bottom-sections-container"
+                style="display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 2rem; grid-column: 1 / -1;">
+                <section class="daily-payments-section" style="margin-top: 0;">
+                    <div class="card glass-card" style="height: 100%;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--card-border); padding-bottom: 0.75rem;">
+                            <h2 style="margin-bottom: 0; border: none; padding: 0;">Daily Payments Received</h2>
+                            <div style="display: flex; gap: 1rem; align-items: center;">
+                                <span style="font-weight: 600; color: var(--accent-color); font-size: 1.1rem;">Total:
+                                    <span id="daily-payments-total">Rs 0.00</span></span>
+                                <input type="date" id="daily-payment-date"
+                                    style="width: 150px; padding: 0.5rem; border-radius: 6px; border: 1px solid var(--card-border);">
+                            </div>
+                        </div>
+                        <div class="table-container" style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr
+                                        style="text-transform: uppercase; font-size: 0.75rem; color: var(--text-secondary); text-align: left; border-bottom: 1px solid var(--card-border);">
+                                        <th style="padding: 0.5rem 0.25rem;" data-i18n="th_person">Person Name</th>
+                                        <th style="padding: 0.5rem 0.25rem;" data-i18n="th_date">Date</th>
+                                        <th style="padding: 0.5rem 0.25rem;" data-i18n="th_type">Type</th>
+                                        <th style="padding: 0.5rem 0.25rem;" data-i18n="th_item">Item</th>
+                                        <th style="padding: 0.5rem 0.25rem;" data-i18n="th_pay_method">Payment Method
+                                        </th>
+                                        <th style="padding: 0.5rem 0.25rem;" data-i18n="th_total_amt">Total Amt</th>
+                                        <th style="padding: 0.5rem 0.25rem;" data-i18n="th_amt_paid">Amount Paid</th>
+                                        <th style="padding: 0.5rem 0.25rem;" data-i18n="th_remaining">Remaining</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="daily-payments-list">
+                                    <!-- Payments will be inserted here dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="daily-payments-empty-state" class="empty-state">
+                            <p>No payments received on this date.</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Edit Rate Modal -->
+    <div id="edit-modal" class="modal-overlay hidden">
+        <div class="modal-content card glass-card">
+            <div class="modal-header">
+                <h2 data-i18n="edit_item">Edit Item</h2>
+                <button id="close-modal-btn" class="delete-btn" style="width: auto;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <form id="edit-form">
+                <input type="hidden" id="edit-item-id">
+                <div class="form-group">
+                    <label for="edit-item-name">Item Name</label>
+                    <input type="text" id="edit-item-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-item-person" data-i18n="person_name">Person Name</label>
+                    <input type="text" id="edit-item-person" list="admin-person-list">
+                </div>
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label id="edit-item-rate-label" data-i18n="rate_pkr">Rate (PKR)</label>
+                        <input type="number" id="edit-item-rate" min="0" step="0.01">
+                    </div>
+                    <div class="form-group half">
+                        <label for="edit-item-unit" data-i18n="unit">Unit</label>
+                        <select id="edit-item-unit" required>
+                            <option value="Kg">Kg</option>
+                            <option value="Pcs">Pcs</option>
+                            <option value="Ltr">Ltr</option>
+                            <option value="Mun">Mun</option>
+                            <option value="Bag (40kg)">Bag (40kg)</option>
+                            <option value="Bag (50kg)">Bag (50kg)</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary" style="margin-top: 0.5rem;" data-i18n="save_changes">Save
+                    Changes</button>
+            </form>
+        </div>
+    </div>
+    <!-- Leger Payment Modal -->
+    <div id="leger-payment-modal" class="modal-overlay hidden">
+        <div class="modal-content card glass-card" style="max-width: 500px;">
+            <form id="leger-payment-form">
+                <div class="form-group">
+                    <label style="color: #64748b; font-weight: 600; font-size: 0.9rem;">Person Name</label>
+                    <input type="text" id="leger-person" placeholder="Enter or select a person..."
+                        style="border: 1px solid var(--card-border); border-radius: 6px; padding: 0.5rem 1rem;"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label style="color: #64748b; font-weight: 600; font-size: 0.9rem;">Current Balance</label>
+                    <input type="number" id="leger-current-balance" step="0.01"
+                        style="border: 1px solid var(--card-border); border-radius: 6px; padding: 0.5rem 1rem;">
+                </div>
+                <div class="form-group">
+                    <label style="color: #64748b; font-weight: 600; font-size: 0.9rem;">Amount Paid</label>
+                    <input type="number" id="leger-amount" value="0" min="0" step="0.01"
+                        style="border: 1px solid var(--card-border); border-radius: 6px; padding: 0.5rem 1rem;"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label style="color: #64748b; font-weight: 600; font-size: 0.9rem;">Payment Method</label>
+                    <select id="leger-method"
+                        style="border: 1px solid var(--card-border); border-radius: 6px; padding: 0.5rem 1rem;">
+                        <option value="-">-</option>
+                        <option value="Cash">Cash</option>
+                        <option value="Bank">Bank Transfer</option>
+                        <option value="Cheque">Cheque</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label style="color: #64748b; font-weight: 600; font-size: 0.9rem;">New Remaining Balance</label>
+                    <input type="text" id="leger-new-balance" value="0" readonly
+                        style="border: 1px solid var(--card-border); border-radius: 6px; padding: 0.5rem 1rem;">
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem;">
+                    <button type="button" id="leger-cancel-btn" class="btn-secondary"
+                        style="margin: 0; padding: 0.5rem 1.5rem;">Cancel</button>
+                    <button type="submit" class="btn-primary"
+                        style="margin: 0; background: linear-gradient(135deg, #a855f7, #ec4899); border: none; padding: 0.5rem 1.5rem;">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Alert/Confirm Modal -->
+    <div id="dialog-modal" class="modal-overlay hidden">
+        <div class="modal-content card glass-card" style="max-width: 400px; text-align: center;">
+            <h2 id="dialog-title" style="margin-bottom: 1rem; border: none;" data-i18n="dialog_notice">Notice</h2>
+            <p id="dialog-message" style="margin-bottom: 2rem; color: var(--text-secondary);"></p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button id="dialog-cancel-btn" class="btn-secondary"
+                    style="margin: 0; width: auto; padding: 0.75rem 1.5rem;" data-i18n="dialog_cancel">Cancel</button>
+                <button id="dialog-ok-btn" class="btn-primary" style="margin: 0; width: auto; padding: 0.75rem 1.5rem;"
+                    data-i18n="dialog_ok">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="theme.js"></script>
+    <script src="admin.js"></script>
+    <script src="i18n.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        flatpickr('input[type="date"]', {
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "d/m/Y"
+        });
+    </script>
+</body>
+
+</html>
