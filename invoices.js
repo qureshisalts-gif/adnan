@@ -10,7 +10,7 @@ const dialogMessage = document.getElementById('dialog-message');
 const dialogOkBtn = document.getElementById('dialog-ok-btn');
 const dialogCancelBtn = document.getElementById('dialog-cancel-btn');
 let dialogCallback = null;
-let showOnlyLeger = false;
+let showOnlyCash = false;
 
 const showConfirm = (title, message, okText, okColor, callback) => {
     dialogTitle.textContent = title;
@@ -201,7 +201,7 @@ const renderInvoices = (filterText = '') => {
             badgeClass = 'badge-purchase';
         }
 
-        if (showOnlyLeger && !isLeger) return;
+        if (showOnlyCash && g.paymentMethod !== 'Cash') return;
 
         renderedCount++;
         const row = document.createElement('tr');
@@ -287,11 +287,11 @@ if (invoiceDateSearch) {
     });
 }
 
-const filterLegerBtn = document.getElementById('filter-leger-btn');
-if (filterLegerBtn) {
-    filterLegerBtn.addEventListener('click', () => {
-        showOnlyLeger = !showOnlyLeger;
-        filterLegerBtn.style.opacity = showOnlyLeger ? '1' : '0.6';
+const filterCashBtn = document.getElementById('filter-cash-btn');
+if (filterCashBtn) {
+    filterCashBtn.addEventListener('click', () => {
+        showOnlyCash = !showOnlyCash;
+        filterCashBtn.style.opacity = showOnlyCash ? '1' : '0.6';
         renderInvoices(invoiceSearch.value.trim());
     });
 }

@@ -238,12 +238,14 @@ saveLabourBtn.addEventListener('click', () => {
     showAlert('Success', 'Labour record saved successfully.');
 
     // Reset Form
+    // Do not set default 0 for rate and qty
     labourItem.value = '';
-    labourQty.value = '0';
-    labourRate.value = '0';
+    labourQty.value = '';
+    labourRate.value = '';
     labourTotal.value = '0.00';
-    labourPaid.value = '0';
-
+    labourPaid.value = '';
+    labourPaymentMethod.value = 'Cash';
+    document.getElementById('labour-bank-container').style.display = 'none';
     const bal = calculateLabourBalance(name);
     labourBalance.value = bal.toFixed(2);
     renderHistory(name);

@@ -565,8 +565,11 @@ const renderCart = () => {
                 <td>${item.qty} ${item.unit}</td>
                 <td>${formatCurrency(amount)}</td>
                 <td>${formatCurrency(runningTotal)}</td>
-                <td>
-                    <button class="icon-btn text-red" onclick="removeFromCart('${item.id}')">
+                <td style="display: flex; gap: 8px;">
+                    <button class="icon-btn text-blue" onclick="editCartItem('${item.id}')" title="Edit Item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    </button>
+                    <button class="icon-btn text-red" onclick="removeFromCart('${item.id}')" title="Remove Item">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                     </button>
                 </td>
@@ -584,6 +587,30 @@ const renderCart = () => {
 window.removeFromCart = (id) => {
     currentCart = currentCart.filter(item => item.id !== id);
     renderCart();
+};
+
+window.editCartItem = (id) => {
+    const item = currentCart.find(i => i.id === id);
+    if (!item) return;
+
+    if (item.itemName === 'Freight Charges') {
+        freightChargesInput.value = item.rate;
+    } else {
+        // Select item in dropdown
+        for (let i = 0; i < itemSelect.options.length; i++) {
+            if (itemSelect.options[i].getAttribute('data-name') === item.itemName) {
+                itemSelect.selectedIndex = i;
+                break;
+            }
+        }
+        itemQty.value = item.qty;
+        itemRateMain.value = item.rate;
+        if (itemUnitMain) itemUnitMain.value = item.unit;
+        if (item.freight > 0) freightChargesInput.value = item.freight;
+    }
+
+    removeFromCart(id);
+    updateItemTotals();
 };
 
 
@@ -622,10 +649,11 @@ const updateRemainingBalance = () => {
 itemSelect.addEventListener('change', () => {
     const selectedOption = itemSelect.options[itemSelect.selectedIndex];
     if (selectedOption.value) {
-        itemRateMain.value = selectedOption.getAttribute('data-rate') || 0;
+        let dr = selectedOption.getAttribute('data-rate');
+        itemRateMain.value = (dr === '0' || !dr) ? '' : dr;
         if (itemUnitMain) itemUnitMain.value = selectedOption.getAttribute('data-unit') || 'Kg';
     } else {
-        itemRateMain.value = 0;
+        itemRateMain.value = '';
         if (itemUnitMain) itemUnitMain.value = 'Kg';
     }
     updateItemTotals();
@@ -1464,8 +1492,8 @@ if (legerBtn && legerModal) {
         const name = legerPerson.value.trim();
         if (!name) {
             legerCurrentBalance.value = '';
-            legerNewBalance.value = '0';
-            legerAmount.value = '0';
+            legerNewBalance.value = '';
+            legerAmount.value = '';
             return;
         }
         const currentBal = calculatePersonBalance(name);
@@ -1505,7 +1533,7 @@ if (legerBtn && legerModal) {
         e.preventDefault();
         legerForm.reset();
         legerCurrentBalance.value = '';
-        legerNewBalance.value = '0';
+        legerNewBalance.value = '';
         if (legerDate) legerDate.value = new Date().toISOString().split('T')[0];
         legerModal.classList.remove('hidden');
     });

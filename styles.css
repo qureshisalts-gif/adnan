@@ -140,6 +140,10 @@ header p {
     color: var(--red);
 }
 
+.text-blue {
+    color: #3b82f6;
+}
+
 /* Main Content Layout */
 .main-content {
     display: grid;

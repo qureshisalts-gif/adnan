@@ -880,8 +880,8 @@ if (legerBtn && legerModal) {
         const name = legerPerson.value.trim();
         if (!name) {
             legerCurrentBalance.value = '';
-            legerNewBalance.value = '0';
-            legerAmount.value = '0';
+            legerNewBalance.value = '';
+            legerAmount.value = '';
             return;
         }
         const currentBal = calculatePersonBalance(name);
@@ -913,7 +913,7 @@ if (legerBtn && legerModal) {
         e.preventDefault();
         legerForm.reset();
         legerCurrentBalance.value = '';
-        legerNewBalance.value = '0';
+        legerNewBalance.value = '';
         legerModal.classList.remove('hidden');
     });
 
