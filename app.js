@@ -1059,7 +1059,11 @@ saveTxnBtn.addEventListener('click', () => {
     currentCart = [];
     renderCart();
 
-    txnDate.value = new Date().toISOString().split('T')[0];
+    if (txnDate._flatpickr) {
+        txnDate._flatpickr.setDate(new Date());
+    } else {
+        txnDate.value = new Date().toISOString().split('T')[0];
+    }
     if (itemSelect) {
         itemSelect.value = '';
         itemSelect.dispatchEvent(new Event('change'));
