@@ -1059,6 +1059,15 @@ saveTxnBtn.addEventListener('click', () => {
     currentCart = [];
     renderCart();
 
+    txnDate.value = new Date().toISOString().split('T')[0];
+    if (itemSelect) {
+        itemSelect.value = '';
+        itemSelect.dispatchEvent(new Event('change'));
+    }
+    if (itemQty) itemQty.value = '';
+    if (itemRateMain) itemRateMain.value = '';
+    if (freightChargesInput) freightChargesInput.value = '';
+
     finAmountPaid.value = '';
     finPaymentMethod.value = '-';
     const finBankName = document.getElementById('fin-bank-name');
