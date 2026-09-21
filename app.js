@@ -819,12 +819,15 @@ const renderHistory = (filterText = '') => {
                 <td class="invoice-cell" style="width: 120px;">
                 <div style="display: flex; gap: 0.75rem; align-items: center; justify-content: flex-end;">
                     <label class="delivery-toggle" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; margin: 0;">
-                        <input type="checkbox" onchange="toggleHistoryDelivery('${t.txnId}', this.checked)" ${t.delivered ? 'checked' : ''} style="width: 16px; height: 16px; cursor: pointer;">
+                        <input type="checkbox" onchange="toggleHistoryDelivery('${t.txnId || t.id}', this.checked)" ${t.delivered ? 'checked' : ''} style="width: 16px; height: 16px; cursor: pointer;">
                         <span class="status-text ${t.delivered ? 'status-delivered' : 'status-pending'}" style="color: ${t.delivered ? 'var(--green)' : 'var(--red)'}; font-weight: 600; font-size: 0.8rem;">
                             ${t.delivered ? 'Delivered' : 'Pending'}
                         </span>
                     </label>
-                    <button class="action-icon text-red" style="background: none; border: none; color: var(--red); cursor: pointer;" onclick="deleteHistoryTransaction('${t.txnId}')" title="Delete">
+                    <button class="action-icon text-blue" style="background: none; border: none; color: #3b82f6; cursor: pointer;" onclick="editHistoryTransaction('${t.txnId || t.id}')" title="Edit">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    </button>
+                    <button class="action-icon text-red" style="background: none; border: none; color: var(--red); cursor: pointer;" onclick="deleteHistoryTransaction('${t.txnId || t.id}')" title="Delete">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                     </button>
                 </div>
@@ -859,7 +862,7 @@ window.editHistoryTransaction = (txnId) => {
 
 window.deleteHistoryTransaction = (txnId) => {
     showConfirm('Delete Invoice', 'Are you sure you want to delete this entire invoice?', 'Delete', 'var(--red)', () => {
-        transactions = transactions.filter(t => t.txnId !== txnId);
+        transactions = transactions.filter(t => t.txnId !== txnId && t.id !== txnId);
         localStorage.setItem('transactions', JSON.stringify(transactions));
         if (window.deleteTransactionFromCloud) window.deleteTransactionFromCloud(txnId);
         renderHistory(txnPerson.value.trim());
@@ -872,7 +875,7 @@ window.deleteHistoryTransaction = (txnId) => {
 window.toggleHistoryDelivery = (txnId, isDelivered) => {
     let changed = false;
     transactions = transactions.map(t => {
-        if (t.txnId === txnId) {
+        if (t.txnId === txnId || t.id === txnId) {
             t.delivered = isDelivered;
             changed = true;
         }
@@ -1376,7 +1379,7 @@ initPersonDatalist();
 
 const editTxnId = localStorage.getItem('editTxnId');
 if (editTxnId) {
-    const editTxns = transactions.filter(t => t.txnId === editTxnId);
+    const editTxns = transactions.filter(t => t.txnId === editTxnId || t.id === editTxnId);
     if (editTxns.length > 0) {
         const firstTxn = editTxns.find(t => !t.type.includes('payment')) || editTxns[0];
 
