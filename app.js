@@ -736,6 +736,11 @@ const renderHistory = (filterText = '') => {
             cleanName === cleanSearchStr
         );
 
+        // Hide zero-amount payments (used only to store payment method for sales)
+        if (t.type.startsWith('payment') && t.price === 0) {
+            return false;
+        }
+
         return isMatch;
     });
 
