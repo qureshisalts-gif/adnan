@@ -1034,8 +1034,8 @@ saveTxnBtn.addEventListener('click', () => {
         });
     });
 
-    // 2. If Amount Paid > 0, record a Payment
-    if (amountPaid > 0) {
+    // 2. If Amount Paid > 0 or a Payment Method is selected, record a Payment
+    if (amountPaid > 0 || paymentMethod !== '-') {
         const paymentType = type === 'sale' ? 'payment_in' : 'payment_out';
         transactions.push({
             id: crypto.randomUUID(),
