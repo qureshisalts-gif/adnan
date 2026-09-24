@@ -870,9 +870,10 @@ window.editHistoryTransaction = (txnId) => {
 };
 
 window.deleteHistoryTransaction = (txnId) => {
-    showConfirm('Delete Invoice', 'Are you sure you want to delete this entire invoice?', 'Delete', 'var(--red)', () => {
+    showConfirm('Delete Invoice', 'Are you sure you want to delete this entire invoice?', 'Delete', 'var(--red)', async () => {
         transactions = transactions.filter(t => t.txnId !== txnId && t.id !== txnId);
-        if (window.deleteTransactionFromCloud) window.deleteTransactionFromCloud(txnId);
+        if (window.deleteTransactionFromCloud) await window.deleteTransactionFromCloud(txnId);
+        localStorage.setItem('adnan_transactions', JSON.stringify(transactions));
         renderHistory(txnPerson.value.trim());
 
         // Also update items totals if necessary
@@ -880,7 +881,7 @@ window.deleteHistoryTransaction = (txnId) => {
     });
 };
 
-window.toggleHistoryDelivery = (txnId, isDelivered) => {
+window.toggleHistoryDelivery = async (txnId, isDelivered) => {
     let changed = false;
     transactions = transactions.map(t => {
         if (t.txnId === txnId || t.id === txnId) {
@@ -890,7 +891,8 @@ window.toggleHistoryDelivery = (txnId, isDelivered) => {
         return t;
     });
     if (changed) {
-        if (window.syncTransactionsToCloud) window.syncTransactionsToCloud(transactions);
+        if (window.syncTransactionsToCloud) await window.syncTransactionsToCloud(transactions);
+        localStorage.setItem('adnan_transactions', JSON.stringify(transactions));
         renderHistory(txnPerson.value.trim());
     }
 };

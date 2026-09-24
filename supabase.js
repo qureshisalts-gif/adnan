@@ -87,7 +87,7 @@ window.deleteTransactionFromCloud = async (txnId) => {
         const supabase = getSupabase();
         if (!supabase) return;
 
-        const { error } = await supabase.from('transactions').delete().eq('txn_id', txnId);
+        const { error } = await supabase.from('transactions').delete().or(`txn_id.eq.${txnId},id.eq.${txnId}`);
         if (error) console.error('Supabase Delete Error:', error);
     } catch (e) {
         console.error('Error in deleteTransactionFromCloud:', e);

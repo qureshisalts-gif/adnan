@@ -268,9 +268,10 @@ const renderInvoices = (filterText = '') => {
 };
 
 window.deleteTransaction = (txnId) => {
-    showConfirm('Delete Transaction', 'Are you sure you want to delete this invoice?', 'Delete', 'var(--red)', () => {
+    showConfirm('Delete Transaction', 'Are you sure you want to delete this invoice?', 'Delete', 'var(--red)', async () => {
         transactions = transactions.filter(t => t.txnId !== txnId && t.id !== txnId);
-        if (window.deleteTransactionFromCloud) window.deleteTransactionFromCloud(txnId);
+        if (window.deleteTransactionFromCloud) await window.deleteTransactionFromCloud(txnId);
+        localStorage.setItem('adnan_transactions', JSON.stringify(transactions));
         renderInvoices(invoiceSearch.value.trim());
     });
 };
