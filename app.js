@@ -1552,6 +1552,7 @@ if (legerBtn && legerModal) {
         legerForm.reset();
         legerCurrentBalance.value = '';
         legerNewBalance.value = '';
+        legerAmount.value = '0';
         if (legerDate) legerDate.value = new Date().toISOString().split('T')[0];
         legerModal.classList.remove('hidden');
     });

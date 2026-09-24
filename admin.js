@@ -911,6 +911,7 @@ if (legerBtn && legerModal) {
         legerForm.reset();
         legerCurrentBalance.value = '';
         legerNewBalance.value = '';
+        legerAmount.value = '0';
         legerModal.classList.remove('hidden');
     });
 
