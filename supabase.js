@@ -19,9 +19,14 @@ window.syncTransactionsToCloud = async (localTransactions) => {
         const cloudMap = new Map();
         (window.cloudTransactions || []).forEach(t => cloudMap.set(t.id, t));
         
+        const syncedIds = new Set(JSON.parse(localStorage.getItem('adnan_synced_txns') || '[]'));
+        
         const toUpsert = localTransactions.filter(t => {
             const cloudT = cloudMap.get(t.id);
-            if (!cloudT) return true;
+            if (!cloudT) {
+                if (syncedIds.has(t.id)) return false;
+                return true;
+            }
             return JSON.stringify(t) !== JSON.stringify(cloudT);
         });
 
@@ -44,7 +49,13 @@ window.syncTransactionsToCloud = async (localTransactions) => {
         }));
         
         const { error } = await supabase.from('transactions').upsert(dataToUpsert);
-        if (error) console.error('Supabase Sync Error (Transactions):', error);
+        if (error) {
+            console.error('Supabase Sync Error (Transactions):', error);
+        } else {
+            const updatedSyncedIds = new Set(JSON.parse(localStorage.getItem('adnan_synced_txns') || '[]'));
+            toUpsert.forEach(t => updatedSyncedIds.add(t.id));
+            localStorage.setItem('adnan_synced_txns', JSON.stringify(Array.from(updatedSyncedIds)));
+        }
     } catch (e) {
         console.error('Error in syncTransactionsToCloud:', e);
     }
@@ -58,9 +69,14 @@ window.syncItemsToCloud = async (localItems) => {
         const cloudMap = new Map();
         (window.cloudItems || []).forEach(i => cloudMap.set(i.id, i));
 
+        const syncedIds = new Set(JSON.parse(localStorage.getItem('adnan_synced_items') || '[]'));
+
         const toUpsert = localItems.filter(i => {
             const cloudI = cloudMap.get(i.id);
-            if (!cloudI) return true;
+            if (!cloudI) {
+                if (syncedIds.has(i.id)) return false;
+                return true;
+            }
             return JSON.stringify(i) !== JSON.stringify(cloudI);
         });
 
@@ -76,7 +92,13 @@ window.syncItemsToCloud = async (localItems) => {
         }));
         
         const { error } = await supabase.from('items').upsert(dataToUpsert);
-        if (error) console.error('Supabase Sync Error (Items):', error);
+        if (error) {
+            console.error('Supabase Sync Error (Items):', error);
+        } else {
+            const updatedSyncedIds = new Set(JSON.parse(localStorage.getItem('adnan_synced_items') || '[]'));
+            toUpsert.forEach(i => updatedSyncedIds.add(i.id));
+            localStorage.setItem('adnan_synced_items', JSON.stringify(Array.from(updatedSyncedIds)));
+        }
     } catch (e) {
         console.error('Error in syncItemsToCloud:', e);
     }
@@ -148,6 +170,11 @@ window.fetchDataFromCloudAndRender = async (renderCallback) => {
                 freight: parseFloat(t.freight) || 0,
                 delivered: t.delivered
             }));
+
+            const syncedTxns = new Set(JSON.parse(localStorage.getItem('adnan_synced_txns') || '[]'));
+            parsedTxns.forEach(t => syncedTxns.add(t.id));
+            localStorage.setItem('adnan_synced_txns', JSON.stringify(Array.from(syncedTxns)));
+
             if (JSON.stringify(window.cloudTransactions) !== JSON.stringify(parsedTxns)) {
                 window.cloudTransactions = parsedTxns;
                 shouldRender = true;
@@ -163,6 +190,11 @@ window.fetchDataFromCloudAndRender = async (renderCallback) => {
                 personName: i.person_name || '',
                 unit: i.unit
             }));
+
+            const syncedItms = new Set(JSON.parse(localStorage.getItem('adnan_synced_items') || '[]'));
+            parsedItems.forEach(i => syncedItms.add(i.id));
+            localStorage.setItem('adnan_synced_items', JSON.stringify(Array.from(syncedItms)));
+
             if (JSON.stringify(window.cloudItems) !== JSON.stringify(parsedItems)) {
                 window.cloudItems = parsedItems;
                 shouldRender = true;

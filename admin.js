@@ -71,7 +71,9 @@ dialogOkBtn.addEventListener('click', () => {
 const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-PK', {
         style: 'currency',
-        currency: 'PKR'
+        currency: 'PKR',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
     }).format(amount);
 };
 
@@ -840,18 +842,36 @@ if (window.fetchDataFromCloudAndRender) {
         const cloudTxns = window.cloudTransactions || [];
         const cloudItms = window.cloudItems || [];
         
+        const syncedTxns = new Set(JSON.parse(localStorage.getItem('adnan_synced_txns') || '[]'));
+        const cloudTxnSet = new Set(cloudTxns.map(t => t.id));
+
         const txnsMap = new Map();
-        transactions.forEach(t => txnsMap.set(t.id, t));
+        transactions.forEach(t => {
+            if (syncedTxns.has(t.id) && !cloudTxnSet.has(t.id)) return;
+            txnsMap.set(t.id, t);
+        });
         cloudTxns.forEach(t => txnsMap.set(t.id, t));
         transactions = Array.from(txnsMap.values());
 
+        const syncedItms = new Set(JSON.parse(localStorage.getItem('adnan_synced_items') || '[]'));
+        const cloudItmSet = new Set(cloudItms.map(i => i.id));
+
         const itmsMap = new Map();
-        items.forEach(i => itmsMap.set(i.id, i));
+        items.forEach(i => {
+            if (syncedItms.has(i.id) && !cloudItmSet.has(i.id)) return;
+            itmsMap.set(i.id, i);
+        });
         cloudItms.forEach(i => itmsMap.set(i.id, i));
         items = Array.from(itmsMap.values());
 
         localStorage.setItem('adnan_transactions', JSON.stringify(transactions));
         localStorage.setItem('adnan_items', JSON.stringify(items));
+
+        const newSyncedTxns = Array.from(syncedTxns).filter(id => txnsMap.has(id));
+        localStorage.setItem('adnan_synced_txns', JSON.stringify(newSyncedTxns));
+
+        const newSyncedItms = Array.from(syncedItms).filter(id => itmsMap.has(id));
+        localStorage.setItem('adnan_synced_items', JSON.stringify(newSyncedItms));
 
         renderItems(itemSearch.value);
         if (deliverySearch) renderDeliveries(deliverySearch.value);
