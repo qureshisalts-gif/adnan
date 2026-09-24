@@ -1,5 +1,5 @@
-let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-let items = JSON.parse(localStorage.getItem('items')) || [];
+let transactions = [];
+let items = [];
 
 // Form Elements
 const labourDate = document.getElementById('labour-date');
@@ -232,7 +232,6 @@ saveLabourBtn.addEventListener('click', () => {
         });
     }
 
-    localStorage.setItem('transactions', JSON.stringify(transactions));
     if (window.syncTransactionsToCloud) window.syncTransactionsToCloud(transactions);
 
     showAlert('Success', 'Labour record saved successfully.');
@@ -254,7 +253,6 @@ saveLabourBtn.addEventListener('click', () => {
 window.deleteLabourTxn = (id) => {
     showConfirm('Delete Transaction', 'Are you sure you want to delete this labour record?', 'Delete', 'var(--red)', () => {
         transactions = transactions.filter(t => t.id !== id);
-        localStorage.setItem('transactions', JSON.stringify(transactions));
         if (window.deleteSpecificTransactionFromCloud) window.deleteSpecificTransactionFromCloud(id);
         const name = labourName.value.trim();
         const bal = calculateLabourBalance(name);
@@ -265,7 +263,7 @@ window.deleteLabourTxn = (id) => {
 
 if (window.fetchDataFromCloudAndRender) {
     window.fetchDataFromCloudAndRender(() => {
-        transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+        transactions = window.cloudTransactions || [];
         initItemDropdown();
         const name = labourName.value.trim();
         if (name) {

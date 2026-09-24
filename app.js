@@ -1,6 +1,6 @@
 // State
-let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-let items = JSON.parse(localStorage.getItem('items')) || [];
+let transactions = [];
+let items = [];
 
 // DOM Elements
 const txnType = document.getElementById('txn-type');
@@ -209,8 +209,8 @@ const migratePersonNames = () => {
     });
 
     if (modified) {
-        localStorage.setItem('transactions', JSON.stringify(transactions));
-        localStorage.setItem('items', JSON.stringify(items));
+        if (window.syncTransactionsToCloud) window.syncTransactionsToCloud(transactions);
+        if (window.syncItemsToCloud) window.syncItemsToCloud(items);
     }
 };
 
@@ -868,7 +868,6 @@ window.editHistoryTransaction = (txnId) => {
 window.deleteHistoryTransaction = (txnId) => {
     showConfirm('Delete Invoice', 'Are you sure you want to delete this entire invoice?', 'Delete', 'var(--red)', () => {
         transactions = transactions.filter(t => t.txnId !== txnId && t.id !== txnId);
-        localStorage.setItem('transactions', JSON.stringify(transactions));
         if (window.deleteTransactionFromCloud) window.deleteTransactionFromCloud(txnId);
         renderHistory(txnPerson.value.trim());
 
@@ -887,7 +886,6 @@ window.toggleHistoryDelivery = (txnId, isDelivered) => {
         return t;
     });
     if (changed) {
-        localStorage.setItem('transactions', JSON.stringify(transactions));
         if (window.syncTransactionsToCloud) window.syncTransactionsToCloud(transactions);
         renderHistory(txnPerson.value.trim());
     }
@@ -1057,7 +1055,6 @@ saveTxnBtn.addEventListener('click', () => {
         });
     }
 
-    localStorage.setItem('transactions', JSON.stringify(transactions));
     if (window.syncTransactionsToCloud) window.syncTransactionsToCloud(transactions);
 
     // Reset Form
@@ -1457,8 +1454,8 @@ renderCart();
 
 if (window.fetchDataFromCloudAndRender) {
     const renderCallback = () => {
-        transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-        items = JSON.parse(localStorage.getItem('items')) || [];
+        transactions = window.cloudTransactions || [];
+        items = window.cloudItems || [];
 
         migratePersonNames();
 
@@ -1617,7 +1614,6 @@ if (legerBtn && legerModal) {
         }
 
         if (hasChanges) {
-            localStorage.setItem('transactions', JSON.stringify(transactions));
             if (window.syncTransactionsToCloud) window.syncTransactionsToCloud(transactions);
 
             if (typeof showAlert !== 'undefined') {

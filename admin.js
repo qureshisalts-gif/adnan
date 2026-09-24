@@ -1,6 +1,6 @@
 // State
-let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-let items = JSON.parse(localStorage.getItem('items')) || [];
+let transactions = [];
+let items = [];
 let pendingItems = [];
 
 // DOM Elements
@@ -594,7 +594,6 @@ editForm.addEventListener('submit', (e) => {
                     t.itemName = newName;
                 }
             });
-            localStorage.setItem('transactions', JSON.stringify(transactions));
             if (window.syncTransactionsToCloud) window.syncTransactionsToCloud(transactions);
             item.name = newName;
         }
@@ -610,7 +609,6 @@ editForm.addEventListener('submit', (e) => {
 
 // Save Items to LocalStorage
 const saveItems = () => {
-    localStorage.setItem('items', JSON.stringify(items));
     if (window.syncItemsToCloud) window.syncItemsToCloud(items);
 };
 
@@ -707,7 +705,6 @@ window.toggleDelivery = (ids, isDelivered) => {
     });
 
     if (changed) {
-        localStorage.setItem('transactions', JSON.stringify(transactions));
         if (window.syncTransactionsToCloud) window.syncTransactionsToCloud(transactions);
         renderDeliveries(deliverySearch ? deliverySearch.value : '');
     }
@@ -838,8 +835,8 @@ if (dailyPaymentDate) renderDailyPayments(dailyPaymentDate.value);
 
 if (window.fetchDataFromCloudAndRender) {
     window.fetchDataFromCloudAndRender(() => {
-        transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-        items = JSON.parse(localStorage.getItem('items')) || [];
+        transactions = window.cloudTransactions || [];
+        items = window.cloudItems || [];
         renderItems(itemSearch.value);
         if (deliverySearch) renderDeliveries(deliverySearch.value);
         if (dailyPaymentDate) renderDailyPayments(dailyPaymentDate.value);
@@ -974,7 +971,6 @@ if (legerBtn && legerModal) {
         }
 
         if (hasChanges) {
-            localStorage.setItem('transactions', JSON.stringify(transactions));
             if (window.syncTransactionsToCloud) window.syncTransactionsToCloud(transactions);
 
             if (typeof showAlert !== 'undefined') {

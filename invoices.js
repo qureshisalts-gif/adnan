@@ -1,4 +1,4 @@
-let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+let transactions = [];
 const invoiceList = document.getElementById('invoice-list');
 const invoiceSearch = document.getElementById('invoice-search');
 const invoiceEmptyState = document.getElementById('invoice-empty-state');
@@ -270,7 +270,6 @@ const renderInvoices = (filterText = '') => {
 window.deleteTransaction = (txnId) => {
     showConfirm('Delete Transaction', 'Are you sure you want to delete this invoice?', 'Delete', 'var(--red)', () => {
         transactions = transactions.filter(t => t.txnId !== txnId && t.id !== txnId);
-        localStorage.setItem('transactions', JSON.stringify(transactions));
         if (window.deleteTransactionFromCloud) window.deleteTransactionFromCloud(txnId);
         renderInvoices(invoiceSearch.value.trim());
     });
@@ -301,7 +300,7 @@ renderInvoices();
 
 if (window.fetchDataFromCloudAndRender) {
     const renderCallback = () => {
-        transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+        transactions = window.cloudTransactions || [];
         renderInvoices(invoiceSearch.value.trim());
     };
 
@@ -1090,7 +1089,6 @@ if (quickEditForm) {
             }
         }
 
-        localStorage.setItem('transactions', JSON.stringify(transactions));
         if (window.syncTransactionsToCloud) window.syncTransactionsToCloud(transactions);
         renderInvoices(invoiceSearch.value.trim());
         quickEditModal.classList.add('hidden');
