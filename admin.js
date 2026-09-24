@@ -1,6 +1,6 @@
 // State
-let transactions = [];
-let items = [];
+let transactions = JSON.parse(localStorage.getItem('adnan_transactions')) || [];
+let items = JSON.parse(localStorage.getItem('adnan_items')) || [];
 let pendingItems = [];
 
 // DOM Elements
@@ -512,11 +512,11 @@ itemForm.addEventListener('submit', (e) => {
 
 // Save All Pending Items
 if (savePendingItemsBtn) {
-    savePendingItemsBtn.addEventListener('click', () => {
+    savePendingItemsBtn.addEventListener('click', async () => {
         if (pendingItems.length === 0) return;
 
         items.push(...pendingItems);
-        saveItems();
+        await saveItems();
         renderItems(itemSearch ? itemSearch.value : '');
 
         // Clear pending items
@@ -532,9 +532,9 @@ if (savePendingItemsBtn) {
 
 // Delete Item
 window.deleteItem = (id) => {
-    showConfirm('Delete Item', 'Are you sure you want to delete this item?', 'Delete', 'var(--red)', () => {
+    showConfirm('Delete Item', 'Are you sure you want to delete this item?', 'Delete', 'var(--red)', async () => {
         items = items.filter(i => i.id !== id);
-        saveItems();
+        await saveItems();
         renderItems(itemSearch.value);
     });
 };
@@ -563,7 +563,7 @@ editModal.addEventListener('click', (e) => {
     }
 });
 
-editForm.addEventListener('submit', (e) => {
+editForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const id = editItemId.value;
     const newName = editItemName.value.trim();
@@ -601,15 +601,16 @@ editForm.addEventListener('submit', (e) => {
         item.rate = newRate;
         item.personName = newPersonName;
         item.unit = newUnit;
-        saveItems();
+        await saveItems();
         renderItems(itemSearch.value);
         editModal.classList.add('hidden');
     }
 });
 
 // Save Items to LocalStorage
-const saveItems = () => {
-    if (window.syncItemsToCloud) window.syncItemsToCloud(items);
+const saveItems = async () => {
+    if (window.syncItemsToCloud) await window.syncItemsToCloud(items);
+    localStorage.setItem('adnan_items', JSON.stringify(items));
 };
 
 // Delivery System Elements
@@ -834,14 +835,39 @@ renderDeliveries();
 if (dailyPaymentDate) renderDailyPayments(dailyPaymentDate.value);
 
 if (window.fetchDataFromCloudAndRender) {
-    window.fetchDataFromCloudAndRender(() => {
-        transactions = window.cloudTransactions || [];
-        items = window.cloudItems || [];
+    const renderCallback = () => {
+        const cloudTxns = window.cloudTransactions || [];
+        const cloudItms = window.cloudItems || [];
+        
+        const txnsMap = new Map();
+        transactions.forEach(t => txnsMap.set(t.id, t));
+        cloudTxns.forEach(t => txnsMap.set(t.id, t));
+        transactions = Array.from(txnsMap.values());
+
+        const itmsMap = new Map();
+        items.forEach(i => itmsMap.set(i.id, i));
+        cloudItms.forEach(i => itmsMap.set(i.id, i));
+        items = Array.from(itmsMap.values());
+
+        localStorage.setItem('adnan_transactions', JSON.stringify(transactions));
+        localStorage.setItem('adnan_items', JSON.stringify(items));
+
         renderItems(itemSearch.value);
         if (deliverySearch) renderDeliveries(deliverySearch.value);
         if (dailyPaymentDate) renderDailyPayments(dailyPaymentDate.value);
-    });
+    };
+
+    window.fetchDataFromCloudAndRender(renderCallback);
+    
+    if (window.setupRealtimeSync) {
+        window.setupRealtimeSync(renderCallback);
+    }
 }
+
+setInterval(() => {
+    if (window.syncTransactionsToCloud && transactions.length > 0) window.syncTransactionsToCloud(transactions);
+    if (window.syncItemsToCloud && items.length > 0) window.syncItemsToCloud(items);
+}, 60 * 60 * 1000); // 1 hour
 
 // Leger Payment Modal Logic
 const legerBtn = document.getElementById('leger-btn');
