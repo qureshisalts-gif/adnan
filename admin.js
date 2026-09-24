@@ -533,6 +533,7 @@ if (savePendingItemsBtn) {
 // Delete Item
 window.deleteItem = (id) => {
     showConfirm('Delete Item', 'Are you sure you want to delete this item?', 'Delete', 'var(--red)', async () => {
+        if (window.deleteItemFromCloud) await window.deleteItemFromCloud(id);
         items = items.filter(i => i.id !== id);
         await saveItems();
         renderItems(itemSearch.value);

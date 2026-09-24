@@ -106,6 +106,18 @@ window.deleteSpecificTransactionFromCloud = async (id) => {
     }
 };
 
+window.deleteItemFromCloud = async (itemId) => {
+    try {
+        const supabase = getSupabase();
+        if (!supabase) return;
+
+        const { error } = await supabase.from('items').delete().eq('id', itemId);
+        if (error) console.error('Supabase Delete Item Error:', error);
+    } catch (e) {
+        console.error('Error in deleteItemFromCloud:', e);
+    }
+};
+
 window.fetchDataFromCloudAndRender = async (renderCallback) => {
     try {
         const supabase = getSupabase();
