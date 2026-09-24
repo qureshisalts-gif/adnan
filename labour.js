@@ -79,9 +79,9 @@ labourRate.addEventListener('input', calculateTotal);
 const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-PK', {
         style: 'decimal',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    }).format(amount);
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(Math.round(amount));
 };
 
 const calculateLabourBalance = (name) => {

@@ -81,6 +81,15 @@ const formatCurrency = (amount) => {
         style: 'currency',
         currency: 'PKR',
         minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(Math.round(amount));
+};
+
+const formatRate = (amount) => {
+    return new Intl.NumberFormat('en-PK', {
+        style: 'currency',
+        currency: 'PKR',
+        minimumFractionDigits: 0,
         maximumFractionDigits: 2
     }).format(amount);
 };
@@ -564,7 +573,7 @@ const renderCart = () => {
                 <td>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <span>${item.itemName}</span>
-                        <span style="color: var(--text-secondary); font-size: 0.9em;">${formatCurrency(item.rate)}</span>
+                        <span style="color: var(--text-secondary); font-size: 0.9em;">${formatRate(item.rate)}</span>
                     </div>
                     ${item.freight > 0 ? `<div style="font-size: 0.8em; color: var(--text-secondary); margin-top: 4px;">+ Freight: ${formatCurrency(item.freight)}</div>` : ''}
                 </td>
@@ -790,7 +799,7 @@ const renderHistory = (filterText = '') => {
             }
 
             let displayQty = `${t.quantity} <span style="font-size: 0.85em; color: var(--text-secondary);" data-i18n="${(t.unit || 'Kg').replace(/ /g, '_').replace(/[()]/g, '').toLowerCase()}">${t.unit || 'Kg'}</span>`;
-            let displayRate = formatCurrency(t.price);
+            let displayRate = formatRate(t.price);
             let displayPayment = '-';
             let displayAmount = formatCurrency(total);
             let displayLegerPayment = '-';

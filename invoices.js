@@ -44,6 +44,14 @@ dialogOkBtn.addEventListener('click', () => {
 const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-PK', {
         style: 'decimal',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(Math.round(amount));
+};
+
+const formatRate = (amount) => {
+    return new Intl.NumberFormat('en-PK', {
+        style: 'decimal',
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     }).format(amount);
@@ -526,7 +534,7 @@ window.printInvoice = (txnId, type = 'normal') => {
                         <td style="padding: 10px; border-bottom: 1px solid #eee;">${displayIndex++}</td>
                         <td style="padding: 10px; border-bottom: 1px solid #eee;">${getUrduItemName(t.itemName, isUrdu)}</td>
                         <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">${qty} <span style="font-size: 0.85em; color: #666;">${t.unit || 'Kg'}</span></td>
-                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: ${isUrdu ? 'left' : 'right'};">${formatCurrency(price)}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: ${isUrdu ? 'left' : 'right'};">${formatRate(price)}</td>
                         <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: ${isUrdu ? 'left' : 'right'};">${formatCurrency(itemTotal)}</td>
                     </tr>
                 `;
@@ -765,7 +773,7 @@ window.copyInvoiceImage = async (txnId, type = 'normal') => {
                         <td style="padding: 10px; border-bottom: 1px solid #eee;">${displayIndex++}</td>
                         <td style="padding: 10px; border-bottom: 1px solid #eee;">${getUrduItemName(t.itemName, isUrdu)}</td>
                         <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">${qty} <span style="font-size: 0.85em; color: #666;">${t.unit || 'Kg'}</span></td>
-                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: ${isUrdu ? 'left' : 'right'};">${formatCurrency(price)}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: ${isUrdu ? 'left' : 'right'};">${formatRate(price)}</td>
                         <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: ${isUrdu ? 'left' : 'right'};">${formatCurrency(itemTotal)}</td>
                     </tr>
                 `;

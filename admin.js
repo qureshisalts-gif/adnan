@@ -73,6 +73,15 @@ const formatCurrency = (amount) => {
         style: 'currency',
         currency: 'PKR',
         minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(Math.round(amount));
+};
+
+const formatRate = (amount) => {
+    return new Intl.NumberFormat('en-PK', {
+        style: 'currency',
+        currency: 'PKR',
+        minimumFractionDigits: 0,
         maximumFractionDigits: 2
     }).format(amount);
 };
@@ -382,7 +391,7 @@ const renderItems = (filterText = '') => {
 
                 row.innerHTML = `
                     <td style="font-weight: 600; padding-left: 2rem;">↳ ${prefix}${item.name}</td>
-                    <td>${formatCurrency(item.rate)}</td>
+                    <td>${formatRate(item.rate)}</td>
                     <td><span style="color: var(--text-secondary); font-size: 0.9em; padding: 2px 6px; border: 1px solid var(--card-border); border-radius: 4px;">${item.unit || 'Kg'}</span></td>
                     <td class="text-green">${stockIn}</td>
                     <td class="text-red">${stockOut}</td>
@@ -430,7 +439,7 @@ const renderPendingItems = () => {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${item.name}</td>
-            <td>${formatCurrency(item.rate)}</td>
+            <td>${formatRate(item.rate)}</td>
             <td>${item.unit}</td>
             <td>
                 <button class="delete-btn" onclick="removePendingItem(${index})" title="Remove">
@@ -587,19 +596,35 @@ editForm.addEventListener('submit', async (e) => {
             return;
         }
 
-        if (item.name !== newName) {
-            // Cascade update to transactions
-            transactions.forEach(t => {
-                const tPerson = (t.personName || '').replace(/^\d+\s*-\s*/, '').toLowerCase();
-                const iPerson = (item.personName || '').replace(/^\d+\s*-\s*/, '').toLowerCase();
+        let transactionsChanged = false;
 
-                if (t.itemName === item.name && tPerson === iPerson) {
+        // Cascade update to transactions
+        transactions.forEach(t => {
+            const tPerson = (t.personName || '').replace(/^\d+\s*-\s*/, '').toLowerCase();
+            const iPerson = (item.personName || '').replace(/^\d+\s*-\s*/, '').toLowerCase();
+
+            if (t.itemName === item.name && tPerson === iPerson) {
+                if (item.name !== newName) {
                     t.itemName = newName;
+                    transactionsChanged = true;
                 }
-            });
+                if (item.rate !== newRate) {
+                    t.price = newRate;
+                    transactionsChanged = true;
+                }
+                if (item.unit !== newUnit) {
+                    t.unit = newUnit;
+                    transactionsChanged = true;
+                }
+            }
+        });
+
+        if (transactionsChanged) {
             if (window.syncTransactionsToCloud) window.syncTransactionsToCloud(transactions);
-            item.name = newName;
+            localStorage.setItem('adnan_transactions', JSON.stringify(transactions));
         }
+        
+        item.name = newName;
 
         item.rate = newRate;
         item.personName = newPersonName;
