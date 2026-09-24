@@ -217,6 +217,8 @@ const migratePersonNames = () => {
 const attachCustomAutocomplete = (inputEl) => {
     inputEl.removeAttribute('list');
 
+    if (inputEl._autocompleteAttached) return;
+    
     let wrapper = inputEl.parentNode;
     if (wrapper.style.position !== 'relative' && wrapper.style.position !== 'absolute') {
         wrapper.style.position = 'relative';
@@ -306,6 +308,8 @@ const attachCustomAutocomplete = (inputEl) => {
     inputEl.addEventListener('blur', () => {
         setTimeout(() => listEl.style.display = 'none', 150);
     });
+    
+    inputEl._autocompleteAttached = true;
 };
 
 const initPersonDatalist = () => {
