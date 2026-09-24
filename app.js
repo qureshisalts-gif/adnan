@@ -1,6 +1,6 @@
 // State
-let transactions = [];
-let items = [];
+let transactions = JSON.parse(localStorage.getItem('adnan_transactions')) || [];
+let items = JSON.parse(localStorage.getItem('adnan_items')) || [];
 
 // DOM Elements
 const txnType = document.getElementById('txn-type');
@@ -1060,6 +1060,7 @@ saveTxnBtn.addEventListener('click', async () => {
     }
 
     if (window.syncTransactionsToCloud) await window.syncTransactionsToCloud(transactions);
+    localStorage.setItem('adnan_transactions', JSON.stringify(transactions));
 
     // Reset Form
     currentCart = [];
@@ -1458,8 +1459,21 @@ renderCart();
 
 if (window.fetchDataFromCloudAndRender) {
     const renderCallback = () => {
-        transactions = window.cloudTransactions || [];
-        items = window.cloudItems || [];
+        const cloudTxns = window.cloudTransactions || [];
+        const cloudItms = window.cloudItems || [];
+        
+        const txnsMap = new Map();
+        transactions.forEach(t => txnsMap.set(t.id, t));
+        cloudTxns.forEach(t => txnsMap.set(t.id, t));
+        transactions = Array.from(txnsMap.values());
+
+        const itmsMap = new Map();
+        items.forEach(i => itmsMap.set(i.id, i));
+        cloudItms.forEach(i => itmsMap.set(i.id, i));
+        items = Array.from(itmsMap.values());
+
+        localStorage.setItem('adnan_transactions', JSON.stringify(transactions));
+        localStorage.setItem('adnan_items', JSON.stringify(items));
 
         migratePersonNames();
 
@@ -1478,6 +1492,11 @@ if (window.fetchDataFromCloudAndRender) {
         window.setupRealtimeSync(renderCallback);
     }
 }
+
+setInterval(() => {
+    if (window.syncTransactionsToCloud && transactions.length > 0) window.syncTransactionsToCloud(transactions);
+    if (window.syncItemsToCloud && items.length > 0) window.syncItemsToCloud(items);
+}, 60 * 60 * 1000); // 1 hour
 
 // Leger Payment Modal Logic
 const legerBtn = document.getElementById('leger-btn');
@@ -1649,6 +1668,7 @@ if (legerBtn && legerModal) {
             if (typeof renderHistory === 'function' && typeof txnPerson !== 'undefined' && txnPerson) renderHistory(txnPerson.value.trim());
             if (typeof updateItemTotals === 'function') updateItemTotals();
             if (typeof initPersonDatalist === 'function') initPersonDatalist();
+            localStorage.setItem('adnan_transactions', JSON.stringify(transactions));
         }
 
         legerModal.classList.add('hidden');
