@@ -970,7 +970,7 @@ addToListBtn.addEventListener('click', () => {
 });
 
 // Save Transaction
-saveTxnBtn.addEventListener('click', () => {
+saveTxnBtn.addEventListener('click', async () => {
     if (currentCart.length === 0) {
         showAlert('Error', 'Your cart is empty. Add items to list first.');
         return;
@@ -1059,7 +1059,7 @@ saveTxnBtn.addEventListener('click', () => {
         });
     }
 
-    if (window.syncTransactionsToCloud) window.syncTransactionsToCloud(transactions);
+    if (window.syncTransactionsToCloud) await window.syncTransactionsToCloud(transactions);
 
     // Reset Form
     currentCart = [];
@@ -1565,7 +1565,7 @@ if (legerBtn && legerModal) {
         legerModal.classList.add('hidden');
     });
 
-    legerForm.addEventListener('submit', (e) => {
+    legerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const name = legerPerson.value.trim();
         const enteredCurrentBal = parseFloat(legerCurrentBalance.value) || 0;
@@ -1638,7 +1638,7 @@ if (legerBtn && legerModal) {
         }
 
         if (hasChanges) {
-            if (window.syncTransactionsToCloud) window.syncTransactionsToCloud(transactions);
+            if (window.syncTransactionsToCloud) await window.syncTransactionsToCloud(transactions);
 
             if (typeof showAlert !== 'undefined') {
                 showAlert('Success', `Changes saved successfully for ${name}`);
