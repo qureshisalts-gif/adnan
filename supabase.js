@@ -27,7 +27,39 @@ window.syncTransactionsToCloud = async (localTransactions) => {
                 if (syncedIds.has(t.id)) return false;
                 return true;
             }
-            return JSON.stringify(t) !== JSON.stringify(cloudT);
+            
+            // Compare only the fields that are synced to Supabase
+            const tData = {
+                id: t.id,
+                txnId: t.txnId,
+                date: t.date,
+                time: t.time || null,
+                type: t.type,
+                personName: t.personName,
+                itemName: t.itemName || null,
+                price: t.price || 0,
+                quantity: t.quantity || 1,
+                unit: t.unit || '-',
+                freight: t.freight || 0,
+                delivered: t.delivered || false
+            };
+            
+            const cloudData = {
+                id: cloudT.id,
+                txnId: cloudT.txnId,
+                date: cloudT.date,
+                time: cloudT.time || null,
+                type: cloudT.type,
+                personName: cloudT.personName,
+                itemName: cloudT.itemName || null,
+                price: cloudT.price || 0,
+                quantity: cloudT.quantity || 1,
+                unit: cloudT.unit || '-',
+                freight: cloudT.freight || 0,
+                delivered: cloudT.delivered || false
+            };
+            
+            return JSON.stringify(tData) !== JSON.stringify(cloudData);
         });
 
         if (toUpsert.length === 0) return;
@@ -77,7 +109,27 @@ window.syncItemsToCloud = async (localItems) => {
                 if (syncedIds.has(i.id)) return false;
                 return true;
             }
-            return JSON.stringify(i) !== JSON.stringify(cloudI);
+            
+            // Compare normalized objects to avoid key ordering issues
+            const iData = {
+                id: i.id,
+                name: i.name,
+                person_name: i.personName || null,
+                stock: i.stock || 0,
+                avg_rate: i.rate || 0,
+                unit: i.unit || 'Kg'
+            };
+            
+            const cloudData = {
+                id: cloudI.id,
+                name: cloudI.name,
+                person_name: cloudI.personName || null,
+                stock: cloudI.stock || 0,
+                avg_rate: cloudI.rate || 0,
+                unit: cloudI.unit || 'Kg'
+            };
+            
+            return JSON.stringify(iData) !== JSON.stringify(cloudData);
         });
 
         if (toUpsert.length === 0) return;
