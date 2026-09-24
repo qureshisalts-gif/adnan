@@ -55,7 +55,8 @@ const renderInvoices = (filterText = '') => {
     const invoiceDateSearch = document.getElementById('invoice-date-search');
     const filterDate = invoiceDateSearch ? invoiceDateSearch.value : '';
 
-    let filteredTransactions = transactions;
+    // Hide zero-amount dummy transactions like "Profile Created"
+    let filteredTransactions = transactions.filter(t => !(t.type?.startsWith('payment') && t.price === 0));
 
     if (filterDate) {
         filteredTransactions = filteredTransactions.filter(t => t.date === filterDate);

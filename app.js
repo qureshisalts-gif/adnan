@@ -742,8 +742,8 @@ const renderHistory = (filterText = '') => {
             cleanName === cleanSearchStr
         );
 
-        // Hide zero-amount payments (used only to store payment method for sales), except for Profile Created
-        if (t.type.startsWith('payment') && t.price === 0 && t.itemName !== 'Profile Created') {
+        // Hide zero-amount payments (used only to store payment method for sales and Profile Created)
+        if (t.type.startsWith('payment') && t.price === 0) {
             return false;
         }
 
