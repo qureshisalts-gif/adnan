@@ -162,9 +162,13 @@ window.fetchDataFromCloudAndRender = async (renderCallback) => {
             renderCallback();
         }
         
-        // No popup needed anymore
-
-        
+        // Show a popup message once per day
+        const today = new Date().toISOString().split('T')[0];
+        const lastSyncDate = localStorage.getItem('lastSupabaseSyncDate');
+        if (lastSyncDate !== today) {
+            alert('Data has been successfully read and synced from Supabase.');
+            localStorage.setItem('lastSupabaseSyncDate', today);
+        }
     } catch (e) {
         console.error('Failed to sync from cloud:', e);
     }

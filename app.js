@@ -1511,7 +1511,7 @@ if (legerBtn && legerModal) {
         if (!name) {
             legerCurrentBalance.value = '';
             legerNewBalance.value = '';
-            legerAmount.value = '';
+            legerAmount.value = '0';
             return;
         }
         const currentBal = calculatePersonBalance(name);
