@@ -1618,6 +1618,25 @@ if (legerBtn && legerModal) {
             hasChanges = true;
         }
 
+        if (!hasChanges) {
+            const dummyTxn = {
+                id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
+                txnId: 'TXN-' + Date.now(),
+                time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }),
+                date: selectedDate,
+                personName: name,
+                itemName: 'Profile Created',
+                type: 'payment_in',
+                quantity: 1,
+                price: 0,
+                freight: 0,
+                amountPaid: 0,
+                paymentMethod: '-'
+            };
+            transactions.push(dummyTxn);
+            hasChanges = true;
+        }
+
         if (hasChanges) {
             if (window.syncTransactionsToCloud) window.syncTransactionsToCloud(transactions);
 
@@ -1629,6 +1648,7 @@ if (legerBtn && legerModal) {
 
             if (typeof renderHistory === 'function' && typeof txnPerson !== 'undefined' && txnPerson) renderHistory(txnPerson.value.trim());
             if (typeof updateItemTotals === 'function') updateItemTotals();
+            if (typeof initPersonDatalist === 'function') initPersonDatalist();
         }
 
         legerModal.classList.add('hidden');
