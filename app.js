@@ -179,29 +179,22 @@ const migratePersonNames = () => {
         return name.replace(/^\d+\s*-\s*/, '').toLowerCase();
     })));
 
-    let maxNum = 0;
-    allPersons.forEach(name => {
-        const match = name.match(/^(\d+)\s*-/);
-        if (match) {
-            const num = parseInt(match[1], 10);
-            if (num > maxNum) maxNum = num;
-        }
+    uniqueCleanNames.sort((a, b) => {
+        const getNum = (cleanName) => {
+            const originalName = allPersons.find(name => name.replace(/^\d+\s*-\s*/, '').toLowerCase() === cleanName);
+            const match = originalName.match(/^(\d+)\s*-/);
+            return match ? parseInt(match[1], 10) : 999999;
+        };
+        return getNum(a) - getNum(b);
     });
 
+    let counter = 1;
     uniqueCleanNames.forEach(cleanName => {
         const originalName = allPersons.find(name => name.replace(/^\d+\s*-\s*/, '').toLowerCase() === cleanName);
-        const match = originalName.match(/^(\d+)\s*-/);
-        
-        let formatted;
-        if (match) {
-            const baseName = originalName.replace(/^\d+\s*-\s*/, '');
-            formatted = `${match[1]} - ${baseName}`;
-        } else {
-            maxNum++;
-            formatted = `${maxNum} - ${originalName}`;
-        }
-        
+        const baseName = originalName.replace(/^\d+\s*-\s*/, '');
+        const formatted = `${counter} - ${baseName}`;
         personsMap.set(cleanName, formatted);
+        counter++;
     });
 
     transactions.forEach(t => {
