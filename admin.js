@@ -875,7 +875,7 @@ if (window.fetchDataFromCloudAndRender) {
             if (syncedTxns.has(t.id) && !cloudTxnSet.has(t.id)) return;
             txnsMap.set(t.id, t);
         });
-        cloudTxns.forEach(t => txnsMap.set(t.id, t));
+        cloudTxns.forEach(t => txnsMap.set(t.id, { ...t }));
         transactions = Array.from(txnsMap.values());
 
         const syncedItms = new Set(JSON.parse(localStorage.getItem('adnan_synced_items') || '[]'));
@@ -886,7 +886,7 @@ if (window.fetchDataFromCloudAndRender) {
             if (syncedItms.has(i.id) && !cloudItmSet.has(i.id)) return;
             itmsMap.set(i.id, i);
         });
-        cloudItms.forEach(i => itmsMap.set(i.id, i));
+        cloudItms.forEach(i => itmsMap.set(i.id, { ...i }));
         items = Array.from(itmsMap.values());
 
         localStorage.setItem('adnan_transactions', JSON.stringify(transactions));
