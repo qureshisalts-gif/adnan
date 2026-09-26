@@ -1034,7 +1034,7 @@ saveTxnBtn.addEventListener('click', async () => {
     const timeString = window.currentEditTxnTime || new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
     if (window.currentEditTxnId) {
-        transactions = transactions.filter(t => t.txnId !== txnId);
+        transactions = transactions.filter(t => t.txnId !== txnId && t.id !== txnId);
     }
 
     // 1. Record the Cart Items
