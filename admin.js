@@ -614,10 +614,6 @@ editForm.addEventListener('submit', async (e) => {
                     t.itemName = newName;
                     transactionsChanged = true;
                 }
-                if (item.rate !== newRate) {
-                    t.price = newRate;
-                    transactionsChanged = true;
-                }
                 if (item.unit !== newUnit) {
                     t.unit = newUnit;
                     transactionsChanged = true;
