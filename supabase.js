@@ -115,7 +115,7 @@ window.syncItemsToCloud = async (localItems) => {
                 id: i.id,
                 name: i.name,
                 person_name: i.personName || null,
-                stock: i.stock || 0,
+                stock: (i.qty === '' || i.qty === undefined) ? -1 : parseFloat(i.qty),
                 avg_rate: i.rate || 0,
                 unit: i.unit || 'Kg'
             };
@@ -124,7 +124,7 @@ window.syncItemsToCloud = async (localItems) => {
                 id: cloudI.id,
                 name: cloudI.name,
                 person_name: cloudI.personName || null,
-                stock: cloudI.stock || 0,
+                stock: (cloudI.qty === '' || cloudI.qty === undefined) ? -1 : parseFloat(cloudI.qty),
                 avg_rate: cloudI.rate || 0,
                 unit: cloudI.unit || 'Kg'
             };
@@ -138,7 +138,7 @@ window.syncItemsToCloud = async (localItems) => {
             id: i.id,
             name: i.name,
             person_name: i.personName || null,
-            stock: i.stock || 0,
+            stock: (i.qty === '' || i.qty === undefined) ? -1 : parseFloat(i.qty),
             avg_rate: i.rate || 0,
             unit: i.unit || 'Kg'
         }));
@@ -238,6 +238,7 @@ window.fetchDataFromCloudAndRender = async (renderCallback) => {
                 id: i.id,
                 name: i.name,
                 stock: parseFloat(i.stock) || 0,
+                qty: (i.stock === null || parseFloat(i.stock) === -1) ? '' : parseFloat(i.stock),
                 rate: parseFloat(i.avg_rate) || 0,
                 personName: i.person_name || '',
                 unit: i.unit
