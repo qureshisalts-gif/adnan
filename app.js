@@ -807,7 +807,7 @@ const renderHistory = (filterText = '') => {
                 displayType = 'leger payment';
             }
 
-            let displayQty = `${t.quantity} <span style="font-size: 0.85em; color: var(--text-secondary);" data-i18n="${(t.unit || 'Kg').replace(/ /g, '_').replace(/[()]/g, '').toLowerCase()}">${t.unit || 'Kg'}</span>`;
+            let displayQty = `${t.quantity} <span style="font-size: 0.85em; color: var(--text-primary);" data-i18n="${(t.unit || 'Kg').replace(/ /g, '_').replace(/[()]/g, '').toLowerCase()}">${t.unit || 'Kg'}</span>`;
             let displayRate = formatRate(t.price);
             let displayPayment = '-';
             let displayAmount = formatCurrency(total);
@@ -837,7 +837,7 @@ const renderHistory = (filterText = '') => {
                             : t.itemName.startsWith('Payment /') 
                                 ? `<span data-i18n="payment_slash">Payment / </span><span data-i18n="${t.itemName.split('/')[1].trim().toLowerCase()}">${t.itemName.split('/')[1].trim()}</span>` 
                                 : `<span data-i18n="${t.itemName.replace(/ /g, '_').toLowerCase()}">${t.itemName}</span>`}
-                        ${displayRate !== '-' ? `<span style="color: var(--text-secondary); font-size: 0.9em;">${displayRate}</span>` : ''}
+                        ${displayRate !== '-' ? `<span style="color: var(--text-primary); font-size: 0.9em;">${displayRate}</span>` : ''}
                     </div>
                 </td>
                 <td>${displayQty}</td>
