@@ -230,6 +230,8 @@ const attachCustomAutocomplete = (inputEl) => {
 
     if (inputEl._autocompleteAttached) return;
     
+    inputEl.setAttribute('autocomplete', 'off');
+
     let wrapper = inputEl.parentNode;
     if (wrapper.style.position !== 'relative' && wrapper.style.position !== 'absolute') {
         wrapper.style.position = 'relative';
@@ -330,6 +332,8 @@ const initPersonDatalist = () => {
 };
 
 const attachItemAutocomplete = (itemSearchEl, itemSelectEl) => {
+    itemSearchEl.setAttribute('autocomplete', 'off');
+    
     let wrapper = itemSearchEl.parentNode;
     if (wrapper.style.position !== 'relative' && wrapper.style.position !== 'absolute') {
         wrapper.style.position = 'relative';
