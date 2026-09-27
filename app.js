@@ -1035,6 +1035,9 @@ saveTxnBtn.addEventListener('click', async () => {
 
     if (window.currentEditTxnId) {
         transactions = transactions.filter(t => t.txnId !== txnId && t.id !== txnId);
+        if (window.deleteTransactionFromCloud) {
+            await window.deleteTransactionFromCloud(txnId);
+        }
     }
 
     // 1. Record the Cart Items
