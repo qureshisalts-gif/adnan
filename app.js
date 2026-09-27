@@ -470,6 +470,7 @@ const updateItemsDropdown = (selectedPerson = '') => {
             option.value = item.id;
             option.textContent = `${item.name} (${item.unit || 'Kg'}) - Rs. ${item.rate}`;
             option.setAttribute('data-rate', item.rate);
+            option.setAttribute('data-qty', (item.qty !== undefined && item.qty !== '') ? item.qty : '');
             option.setAttribute('data-name', item.name);
             option.setAttribute('data-unit', item.unit || 'Kg');
             option.setAttribute('data-person', (item.personName || '').toLowerCase());
@@ -496,6 +497,7 @@ const updateItemsDropdown = (selectedPerson = '') => {
             option.value = item.id;
             option.textContent = `${globalIndex} - ${item.name} (${item.unit || 'Kg'}) - Rs. ${item.rate}`;
             option.setAttribute('data-rate', item.rate);
+            option.setAttribute('data-qty', (item.qty !== undefined && item.qty !== '') ? item.qty : '');
             option.setAttribute('data-name', item.name);
             option.setAttribute('data-unit', item.unit || 'Kg');
             option.setAttribute('data-person', '');
@@ -669,10 +671,13 @@ itemSelect.addEventListener('change', () => {
     const selectedOption = itemSelect.options[itemSelect.selectedIndex];
     if (selectedOption.value) {
         let dr = selectedOption.getAttribute('data-rate');
+        let dq = selectedOption.getAttribute('data-qty');
         itemRateMain.value = (dr === '0' || !dr) ? '' : dr;
+        itemQty.value = dq || '';
         if (itemUnitMain) itemUnitMain.value = selectedOption.getAttribute('data-unit') || 'Kg';
     } else {
         itemRateMain.value = '';
+        itemQty.value = '';
         if (itemUnitMain) itemUnitMain.value = 'Kg';
     }
     updateItemTotals();

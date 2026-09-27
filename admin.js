@@ -8,6 +8,7 @@ const itemForm = document.getElementById('item-form');
 const itemNameInput = document.getElementById('item-name');
 const itemPersonInput = document.getElementById('item-person');
 const itemRateInput = document.getElementById('item-rate');
+const itemQtyInput = document.getElementById('item-qty');
 const itemUnitInput = document.getElementById('item-unit');
 const itemList = document.getElementById('item-list');
 const itemEmptyState = document.getElementById('item-empty-state');
@@ -26,6 +27,7 @@ const editItemId = document.getElementById('edit-item-id');
 const editItemName = document.getElementById('edit-item-name');
 const editItemPerson = document.getElementById('edit-item-person');
 const editItemRate = document.getElementById('edit-item-rate');
+const editItemQty = document.getElementById('edit-item-qty');
 const editItemUnit = document.getElementById('edit-item-unit');
 
 // Dialog Elements
@@ -468,6 +470,7 @@ itemForm.addEventListener('submit', (e) => {
     const pName = itemPersonInput ? itemPersonInput.value.trim() : '';
     const unit = itemUnitInput ? itemUnitInput.value : 'Kg';
     const rate = parseFloat(itemRateInput.value) || 0;
+    const qty = (itemQtyInput && itemQtyInput.value.trim() !== '') ? parseFloat(itemQtyInput.value) : '';
 
     // Check if the person matches the existing cart (if any)
     if (pendingItems.length > 0) {
@@ -507,6 +510,7 @@ itemForm.addEventListener('submit', (e) => {
             name: n,
             personName: pName,
             rate: rate,
+            qty: qty,
             unit: unit
         });
     });
@@ -560,6 +564,7 @@ window.editItem = (id) => {
     editItemName.value = item.name;
     if (editItemPerson) editItemPerson.value = item.personName || '';
     editItemRate.value = item.rate;
+    if (editItemQty) editItemQty.value = (item.qty !== undefined && item.qty !== '') ? item.qty : '';
     editItemUnit.value = item.unit || 'Kg';
 
     editModal.classList.remove('hidden');
@@ -580,6 +585,7 @@ editForm.addEventListener('submit', async (e) => {
     const id = editItemId.value;
     const newName = editItemName.value.trim();
     const newRate = parseFloat(editItemRate.value) || 0;
+    const newQty = (editItemQty && editItemQty.value.trim() !== '') ? parseFloat(editItemQty.value) : '';
     const newPersonName = editItemPerson ? editItemPerson.value.trim() : '';
     const newUnit = editItemUnit ? editItemUnit.value : 'Kg';
 
@@ -625,7 +631,7 @@ editForm.addEventListener('submit', async (e) => {
         }
         
         item.name = newName;
-
+        item.qty = newQty;
         item.rate = newRate;
         item.personName = newPersonName;
         item.unit = newUnit;
