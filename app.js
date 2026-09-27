@@ -857,7 +857,6 @@ const renderHistory = (filterText = '') => {
                 </div>
             </td>`;
             seenTxnIds.add(t.txnId);
-            historyList.appendChild(row);
 
             if (t.freight && parseFloat(t.freight) > 0) {
                 const fRow = document.createElement('tr');
@@ -873,8 +872,9 @@ const renderHistory = (filterText = '') => {
                 <td>-</td>
                 <td class="invoice-cell"></td>
                 `;
-                historyList.appendChild(fRow);
+                historyList.prepend(fRow);
             }
+            historyList.prepend(row);
         });
     }
 };
@@ -1738,7 +1738,13 @@ if (downloadStatementBtn) {
             }
         });
 
+        const tbody = document.getElementById('history-list');
+        const rowsArray = Array.from(tbody.children);
+        rowsArray.reverse().forEach(r => tbody.appendChild(r));
+
         const tableHtml = document.querySelector('#person-history-section .table-container').innerHTML;
+
+        rowsArray.reverse().forEach(r => tbody.appendChild(r));
 
         allRows.forEach(row => {
             const cb = row.querySelector('.history-row-checkbox');
@@ -1803,7 +1809,13 @@ const handleExportStatement = async (actionType, targetLang) => {
         }
     });
 
+    const tbody = document.getElementById('history-list');
+    const rowsArray = Array.from(tbody.children);
+    rowsArray.reverse().forEach(r => tbody.appendChild(r));
+
     const tableHtml = document.querySelector('#person-history-section .table-container').innerHTML;
+
+    rowsArray.reverse().forEach(r => tbody.appendChild(r));
 
     allRows.forEach(row => {
         const cb = row.querySelector('.history-row-checkbox');
