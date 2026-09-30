@@ -165,10 +165,33 @@
 
             <div class="form-group">
                 <label style="font-weight: 600; color: var(--accent-color);">Manage Work Items (Things)</label>
-                <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; margin-top: 0.5rem;">
+                
+                <div style="margin-top: 0.5rem; margin-bottom: 1rem;">
                     <input type="text" id="new-labour-item" placeholder="e.g. black salt, pink salt, white salt">
+                </div>
+                
+                <div class="form-row" style="margin-bottom: 1rem;">
+                    <div class="form-group third">
+                        <label>Quantity</label>
+                        <input type="number" id="new-labour-qty" min="0" step="0.01">
+                    </div>
+                    <div class="form-group third">
+                        <label>Rate (Price)</label>
+                        <input type="number" id="new-labour-rate" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group third">
+                        <label>Unit</label>
+                        <select id="new-labour-unit">
+                            <option value="Kg">Kg</option>
+                            <option value="Tons">Tons</option>
+                            <option value="Pounds">Pounds</option>
+                            <option value="Bags">Bags</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="text-align: right; margin-bottom: 1rem;">
                     <button id="add-labour-item-btn" class="btn-primary" style="margin: 0; width: auto; padding: 0.5rem 1.5rem; border-radius: 8px;">
-                        Add
+                        Add to List
                     </button>
                 </div>
                 <ul id="labour-items-list-ul" style="list-style: none; padding: 0; max-height: 150px; overflow-y: auto;"></ul>

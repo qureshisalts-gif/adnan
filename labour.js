@@ -60,7 +60,13 @@ dialogOkBtn.addEventListener('click', () => {
 labourDate.value = new Date().toISOString().split('T')[0];
 
 let labourNames = JSON.parse(localStorage.getItem('adnan_labour_names')) || [];
-let labourItems = JSON.parse(localStorage.getItem('adnan_labour_items')) || [];
+let rawItems = JSON.parse(localStorage.getItem('adnan_labour_items')) || [];
+let labourItems = rawItems.map(item => {
+    if (typeof item === 'string') {
+        return { name: item, qty: 0, rate: 0, unit: 'Kg' };
+    }
+    return item;
+});
 
 const renderLabourNames = () => {
     const ul = document.getElementById('labour-names-list-ul');
@@ -94,13 +100,13 @@ const renderLabourItems = () => {
         if (ul) {
             const li = document.createElement('li');
             li.style = "display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; border-bottom: 1px solid var(--card-border);";
-            li.innerHTML = `<span>${item}</span> <button type="button" class="icon-btn text-red" onclick="removeLabourItem('${item}')" style="cursor: pointer; background: none; border: none; color: var(--red);" title="Remove">✖</button>`;
+            li.innerHTML = `<span>${item.name} <small class="text-secondary">(${item.qty} ${item.unit} @ ${item.rate})</small></span> <button type="button" class="icon-btn text-red" onclick="removeLabourItem('${item.name}')" style="cursor: pointer; background: none; border: none; color: var(--red);" title="Remove">✖</button>`;
             ul.appendChild(li);
         }
         if (select) {
             const opt = document.createElement('option');
-            opt.value = item;
-            opt.textContent = item;
+            opt.value = item.name;
+            opt.textContent = `${item.name} (${item.unit})`;
             select.appendChild(opt);
         }
     });
@@ -112,8 +118,8 @@ window.removeLabourName = (name) => {
     renderLabourNames();
 };
 
-window.removeLabourItem = (item) => {
-    labourItems = labourItems.filter(i => i !== item);
+window.removeLabourItem = (itemName) => {
+    labourItems = labourItems.filter(i => i.name !== itemName);
     localStorage.setItem('adnan_labour_items', JSON.stringify(labourItems));
     renderLabourItems();
 };
@@ -129,11 +135,19 @@ document.getElementById('add-labour-name-btn')?.addEventListener('click', () => 
 });
 
 document.getElementById('add-labour-item-btn')?.addEventListener('click', () => {
-    const val = document.getElementById('new-labour-item').value.trim();
-    if (val && !labourItems.includes(val)) {
-        labourItems.push(val);
+    const nameVal = document.getElementById('new-labour-item').value.trim();
+    const qtyVal = parseFloat(document.getElementById('new-labour-qty').value) || 0;
+    const rateVal = parseFloat(document.getElementById('new-labour-rate').value) || 0;
+    const unitVal = document.getElementById('new-labour-unit').value || 'Kg';
+    
+    if (nameVal && !labourItems.some(i => i.name === nameVal)) {
+        labourItems.push({ name: nameVal, qty: qtyVal, rate: rateVal, unit: unitVal });
         localStorage.setItem('adnan_labour_items', JSON.stringify(labourItems));
+        
         document.getElementById('new-labour-item').value = '';
+        document.getElementById('new-labour-qty').value = '';
+        document.getElementById('new-labour-rate').value = '';
+        
         renderLabourItems();
     }
 });
@@ -149,6 +163,16 @@ document.getElementById('close-admin-modal-btn')?.addEventListener('click', () =
 // Initial Render
 renderLabourNames();
 renderLabourItems();
+
+document.getElementById('labour-item')?.addEventListener('change', (e) => {
+    const selectedName = e.target.value;
+    const found = labourItems.find(i => i.name === selectedName);
+    if (found) {
+        if (found.qty > 0) document.getElementById('labour-qty').value = found.qty;
+        if (found.rate > 0) document.getElementById('labour-rate').value = found.rate;
+        calculateTotal();
+    }
+});
 
 const calculateTotal = () => {
     const qty = parseFloat(labourQty.value) || 0;
