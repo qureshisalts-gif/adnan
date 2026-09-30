@@ -132,7 +132,7 @@ const resolvePersonName = (inputVal) => {
     if (!inputVal) return '';
     const val = inputVal.toLowerCase().trim();
     const persons = getUniquePersons();
-    
+
     // 1. Exact match
     const exactMatch = persons.find(p => p.toLowerCase() === val);
     if (exactMatch) return exactMatch;
@@ -229,7 +229,7 @@ const attachCustomAutocomplete = (inputEl) => {
     inputEl.removeAttribute('list');
 
     if (inputEl._autocompleteAttached) return;
-    
+
     inputEl.setAttribute('autocomplete', 'off');
 
     let wrapper = inputEl.parentNode;
@@ -256,7 +256,7 @@ const attachCustomAutocomplete = (inputEl) => {
         listEl.style.margin = '4px 0 0 0';
         listEl.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
         listEl.style.display = 'none';
-        
+
         inputEl.parentNode.insertBefore(listEl, inputEl.nextSibling);
     }
 
@@ -266,11 +266,11 @@ const attachCustomAutocomplete = (inputEl) => {
         const isAlpha = val.length > 0 && /^[a-z]/i.test(val);
 
         listEl.innerHTML = '';
-        
+
         let matches = persons.filter(p => {
             if (!val) return true;
             const cleanName = p.replace(/^\d+\s*-\s*/, '').trim().toLowerCase();
-            
+
             if (isAlpha) {
                 return cleanName.startsWith(val);
             } else {
@@ -312,7 +312,7 @@ const attachCustomAutocomplete = (inputEl) => {
                 listEl.appendChild(li);
             }
         });
-        
+
         listEl.style.display = 'block';
     };
 
@@ -321,7 +321,7 @@ const attachCustomAutocomplete = (inputEl) => {
     inputEl.addEventListener('blur', () => {
         setTimeout(() => listEl.style.display = 'none', 150);
     });
-    
+
     inputEl._autocompleteAttached = true;
 };
 
@@ -333,7 +333,7 @@ const initPersonDatalist = () => {
 
 const attachItemAutocomplete = (itemSearchEl, itemSelectEl) => {
     itemSearchEl.setAttribute('autocomplete', 'off');
-    
+
     let wrapper = itemSearchEl.parentNode;
     if (wrapper.style.position !== 'relative' && wrapper.style.position !== 'absolute') {
         wrapper.style.position = 'relative';
@@ -358,7 +358,7 @@ const attachItemAutocomplete = (itemSearchEl, itemSelectEl) => {
         listEl.style.margin = '4px 0 0 0';
         listEl.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
         listEl.style.display = 'none';
-        
+
         itemSearchEl.parentNode.insertBefore(listEl, itemSearchEl.nextSibling);
     }
 
@@ -366,13 +366,13 @@ const attachItemAutocomplete = (itemSearchEl, itemSelectEl) => {
         const val = itemSearchEl.value.toLowerCase().trim();
         const isAlpha = val.length > 0 && /^[a-z]/i.test(val);
         listEl.innerHTML = '';
-        
+
         const options = Array.from(itemSelectEl.options).filter(opt => opt.value !== "");
-        
+
         let matches = options.filter(opt => {
             if (!val) return true;
             const itemName = (opt.getAttribute('data-name') || '').toLowerCase();
-            
+
             if (isAlpha) {
                 return itemName.startsWith(val);
             } else {
@@ -407,7 +407,7 @@ const attachItemAutocomplete = (itemSearchEl, itemSelectEl) => {
 
             listEl.appendChild(li);
         });
-        
+
         listEl.style.display = 'block';
     };
 
@@ -832,12 +832,12 @@ const renderHistory = (filterText = '') => {
                 <td><span class="type-badge ${badgeClass}" data-i18n="${displayType.replace(' ', '_')}">${displayType}</span></td>
                 <td>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        ${t.itemName === 'Previous Balance' 
-                            ? '<span data-i18n="prev_balance">Previous Balance</span>'
-                            : t.itemName.startsWith('Payment /') 
-                                ? `<span data-i18n="payment_slash">Payment / </span><span data-i18n="${t.itemName.split('/')[1].trim().toLowerCase()}">${t.itemName.split('/')[1].trim()}</span>` 
-                                : `<span data-i18n="${t.itemName.replace(/ /g, '_').toLowerCase()}">${t.itemName}</span>`}
-                        ${displayRate !== '-' ? `<span style="color: var(--text-primary); font-size: 0.9em;">${displayRate}</span>` : ''}
+                        ${t.itemName === 'Previous Balance'
+                    ? '<span data-i18n="prev_balance">Previous Balance</span>'
+                    : t.itemName.startsWith('Payment /')
+                        ? `<span data-i18n="payment_slash">Payment / </span><span data-i18n="${t.itemName.split('/')[1].trim().toLowerCase()}">${t.itemName.split('/')[1].trim()}</span>`
+                        : `<span data-i18n="${t.itemName.replace(/ /g, '_').toLowerCase()}">${t.itemName}</span>`}
+                        ${displayRate !== '-' ? `<div style="display: flex; align-items: center; gap: 0.25rem;"><input type="checkbox" class="include-rate-cb no-export" checked style="cursor:pointer;" title="Include Rate"> <span class="rate-val" style="color: var(--text-primary); font-size: 0.9em;">${displayRate}</span></div>` : ''}
                     </div>
                 </td>
                 <td>${displayQty}</td>
@@ -1186,14 +1186,14 @@ function getUrduItemName(itemName, isUrdu) {
         let cleanName = String(itemName).trim();
         cleanName = cleanName.replace(/^\d+\s*-\s*/, ''); // strip prefix just in case
         const key = cleanName.replace(/\s+/g, '_').toLowerCase();
-        
-        const dict = (typeof window.translations !== 'undefined' && window.translations.ur) 
-            ? window.translations.ur 
+
+        const dict = (typeof window.translations !== 'undefined' && window.translations.ur)
+            ? window.translations.ur
             : ((typeof translations !== 'undefined' && translations.ur) ? translations.ur : null);
-            
+
         if (dict) {
             if (dict[key]) return dict[key];
-            
+
             const relaxedKey = cleanName.replace(/[^a-z0-9]/gi, '').toLowerCase();
             for (let k in dict) {
                 if (k.replace(/[^a-z0-9]/gi, '').toLowerCase() === relaxedKey) {
@@ -1201,7 +1201,7 @@ function getUrduItemName(itemName, isUrdu) {
                 }
             }
         }
-    } catch(e) {}
+    } catch (e) { }
     return itemName;
 };
 
@@ -1486,7 +1486,7 @@ if (window.fetchDataFromCloudAndRender) {
     const renderCallback = () => {
         const cloudTxns = window.cloudTransactions || [];
         const cloudItms = window.cloudItems || [];
-        
+
         const syncedTxns = new Set(JSON.parse(localStorage.getItem('adnan_synced_txns') || '[]'));
         const cloudTxnSet = new Set(cloudTxns.map(t => t.id));
 
@@ -1522,7 +1522,7 @@ if (window.fetchDataFromCloudAndRender) {
 
         updateItemTotals();
         renderCart();
-        
+
         if (typeof txnPerson !== 'undefined' && txnPerson) {
             renderHistory(txnPerson.value.trim());
             initPersonDatalist();
@@ -1530,7 +1530,7 @@ if (window.fetchDataFromCloudAndRender) {
     };
 
     window.fetchDataFromCloudAndRender(renderCallback);
-    
+
     if (window.setupRealtimeSync) {
         window.setupRealtimeSync(renderCallback);
     }
@@ -1741,6 +1741,15 @@ if (downloadStatementBtn) {
                 row.dataset.originalDisplay = row.style.display || '';
                 row.style.display = 'none';
             }
+
+            const rateCb = row.querySelector('.include-rate-cb');
+            if (rateCb && !rateCb.checked) {
+                const rateVal = row.querySelector('.rate-val');
+                if (rateVal) {
+                    rateVal.dataset.originalText = rateVal.innerHTML;
+                    rateVal.innerHTML = '';
+                }
+            }
         });
 
         const tbody = document.getElementById('history-list');
@@ -1756,6 +1765,14 @@ if (downloadStatementBtn) {
             if (cb && !cb.checked) {
                 row.style.display = row.dataset.originalDisplay || '';
             }
+
+            const rateCb = row.querySelector('.include-rate-cb');
+            if (rateCb && !rateCb.checked) {
+                const rateVal = row.querySelector('.rate-val');
+                if (rateVal && rateVal.dataset.originalText !== undefined) {
+                    rateVal.innerHTML = rateVal.dataset.originalText;
+                }
+            }
         });
 
         const html = `<!DOCTYPE html>
@@ -1769,6 +1786,7 @@ if (downloadStatementBtn) {
         th, td { padding: 8px 10px; border-bottom: 1px solid #ddd; text-align: left; }
         th { background-color: #f8fafc; font-weight: bold; text-transform: uppercase; font-size: 12px; color: #555; }
         td:first-child, th:first-child { display: none !important; } /* Hide Checkbox column */
+        .no-export, #select-all-rates { display: none !important; }
         @media print {
             body { padding: 0; margin: 1cm; }
             .action-icon, button, svg { display: none !important; }
@@ -1796,21 +1814,30 @@ if (downloadStatementBtn) {
 
 const handleExportStatement = async (actionType, targetLang) => {
     const originalLang = window.currentLang;
-    
+
     // Temporarily switch language if needed to translate headers
     if (originalLang !== targetLang) {
         window.currentLang = targetLang;
         if (typeof window.applyTranslations === 'function') window.applyTranslations();
     }
-    
+
     const personName = document.getElementById('history-person-name').textContent;
-    
+
     const allRows = document.querySelectorAll('#history-list tr');
     allRows.forEach(row => {
         const cb = row.querySelector('.history-row-checkbox');
         if (cb && !cb.checked) {
             row.dataset.originalDisplay = row.style.display || '';
             row.style.display = 'none';
+        }
+
+        const rateCb = row.querySelector('.include-rate-cb');
+        if (rateCb && !rateCb.checked) {
+            const rateVal = row.querySelector('.rate-val');
+            if (rateVal) {
+                rateVal.dataset.originalText = rateVal.innerHTML;
+                rateVal.innerHTML = '';
+            }
         }
     });
 
@@ -1826,6 +1853,14 @@ const handleExportStatement = async (actionType, targetLang) => {
         const cb = row.querySelector('.history-row-checkbox');
         if (cb && !cb.checked) {
             row.style.display = row.dataset.originalDisplay || '';
+        }
+
+        const rateCb = row.querySelector('.include-rate-cb');
+        if (rateCb && !rateCb.checked) {
+            const rateVal = row.querySelector('.rate-val');
+            if (rateVal && rateVal.dataset.originalText !== undefined) {
+                rateVal.innerHTML = rateVal.dataset.originalText;
+            }
         }
     });
 
@@ -1845,7 +1880,7 @@ const handleExportStatement = async (actionType, targetLang) => {
             printIframe.style.border = 'none';
             document.body.appendChild(printIframe);
         }
-        
+
         const html = `<!DOCTYPE html>
 <html>
 <head>
@@ -1857,6 +1892,7 @@ const handleExportStatement = async (actionType, targetLang) => {
         th, td { padding: 8px 10px; border-bottom: 1px solid #ddd; text-align: left; }
         th { background-color: #f8fafc; font-weight: bold; text-transform: uppercase; font-size: 12px; color: #555; }
         td:first-child, th:first-child { display: none !important; }
+        .no-export, #select-all-rates { display: none !important; }
         @media print {
             body { padding: 0; margin: 1cm; }
             .action-icon, button, svg { display: none !important; }
@@ -1900,6 +1936,7 @@ const handleExportStatement = async (actionType, targetLang) => {
                 th { background-color: #f8fafc; font-weight: bold; text-transform: uppercase; font-size: 12px; color: #555; }
                 td:last-child, th:last-child { display: none !important; }
                 td:first-child, th:first-child { display: none !important; }
+                .no-export, #select-all-rates { display: none !important; }
                 .badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
                 .bg-green-100 { background-color: #dcfce7; color: #166534; }
                 .bg-red-100 { background-color: #fee2e2; color: #991b1b; }
@@ -1948,7 +1985,7 @@ const handleExportStatement = async (actionType, targetLang) => {
             }
         }
     }
-    
+
     // Switch back
     if (originalLang !== targetLang) {
         window.currentLang = originalLang;
@@ -1970,6 +2007,10 @@ document.addEventListener('change', (e) => {
     if (e.target.id === 'select-all-history') {
         const isChecked = e.target.checked;
         const checkboxes = document.querySelectorAll('.history-row-checkbox');
+        checkboxes.forEach(cb => cb.checked = isChecked);
+    } else if (e.target.id === 'select-all-rates') {
+        const isChecked = e.target.checked;
+        const checkboxes = document.querySelectorAll('.include-rate-cb');
         checkboxes.forEach(cb => cb.checked = isChecked);
     }
 });

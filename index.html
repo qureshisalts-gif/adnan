@@ -109,17 +109,23 @@
                 </div>
                 <div style="margin-left: auto; display: flex; gap: 1rem; align-items: center;">
                     <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                        <label style="font-size: 0.75rem; color: #64748b; margin: 0; font-weight: 600; text-align: center;">Freight Charges</label>
+                        <label
+                            style="font-size: 0.75rem; color: #64748b; margin: 0; font-weight: 600; text-align: center;">Freight
+                            Charges</label>
                         <input type="number" id="freight-charges" min="0"
                             style="width: 100px; padding: 0.4rem 0.5rem; height: auto; border: 1px solid var(--card-border); border-radius: 6px; background-color: white;">
                     </div>
-                    <div style="background-color: #ffffff; border: 1px dashed rgba(99, 102, 241, 0.4); padding: 0.5rem 1rem; border-radius: 8px; text-align: right;">
-                        <div style="color: var(--accent-color); font-weight: 700; font-size: 1.1rem;">Item Total: <span id="cart-item-total">0.00</span></div>
-                        <div style="color: #64748b; font-size: 0.75rem; margin-top: 0.1rem;">Total Weight: <span id="cart-item-weight">0.00 (Kg)</span></div>
+                    <div
+                        style="background-color: #ffffff; border: 1px dashed rgba(99, 102, 241, 0.4); padding: 0.5rem 1rem; border-radius: 8px; text-align: right;">
+                        <div style="color: var(--accent-color); font-weight: 700; font-size: 1.1rem;">Item Total: <span
+                                id="cart-item-total">0.00</span></div>
+                        <div style="color: #64748b; font-size: 0.75rem; margin-top: 0.1rem;">Total Weight: <span
+                                id="cart-item-weight">0.00 (Kg)</span></div>
                     </div>
                     <button id="add-to-list-btn" class="btn-primary"
                         style="background-color: #f3e8ff; color: #8b5cf6; border: 1px dashed #8b5cf6; width: auto; padding: 0.75rem 2rem; border-radius: 8px; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; margin-top: 0; transition: all 0.2s;">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
                             <circle cx="12" cy="12" r="10"></circle>
                             <line x1="12" y1="8" x2="12" y2="16"></line>
                             <line x1="8" y1="12" x2="16" y2="12"></line>
@@ -136,7 +142,9 @@
                 </div>
                 <div class="form-group" style="flex: 2; margin-bottom: 0;">
                     <label style="font-size: 0.8rem; color: #64748b;">Item</label>
-                    <input type="text" id="item-search" placeholder="Search an item..." autocomplete="off" data-i18n="select_item" style="background-color: white; border-radius: 6px; padding: 0.5rem 1rem; border: 1px solid var(--card-border); width: 100%; box-sizing: border-box;">
+                    <input type="text" id="item-search" placeholder="Search an item..." autocomplete="off"
+                        data-i18n="select_item"
+                        style="background-color: white; border-radius: 6px; padding: 0.5rem 1rem; border: 1px solid var(--card-border); width: 100%; box-sizing: border-box;">
                     <select id="item-select" style="display: none;">
                         <option value="" data-i18n="select_item">Select an item...</option>
                     </select>
@@ -177,14 +185,20 @@
                 </div>
                 <div style="display: flex; gap: 0.5rem; align-items: center;">
                     <span style="font-size: 0.75rem; color: #64748b; margin-right: -4px;">EN:</span>
-                    <button id="copy-statement-en-btn" class="action-icon" style="background: none; border: none; color: var(--accent-color); cursor: pointer;" title="Copy Statement (EN)">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <button id="copy-statement-en-btn" class="action-icon"
+                        style="background: none; border: none; color: var(--accent-color); cursor: pointer;"
+                        title="Copy Statement (EN)">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
                             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                         </svg>
                     </button>
-                    <button id="download-statement-en-btn" class="action-icon" style="background: none; border: none; color: var(--accent-color); cursor: pointer;" title="Download Statement (EN)">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <button id="download-statement-en-btn" class="action-icon"
+                        style="background: none; border: none; color: var(--accent-color); cursor: pointer;"
+                        title="Download Statement (EN)">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                             <polyline points="7 10 12 15 17 10"></polyline>
                             <line x1="12" y1="15" x2="12" y2="3"></line>
@@ -192,14 +206,20 @@
                     </button>
                     <div style="width: 1px; height: 16px; background-color: #cbd5e1; margin: 0 4px;"></div>
                     <span style="font-size: 0.75rem; color: #64748b; margin-right: -4px;">UR:</span>
-                    <button id="copy-statement-ur-btn" class="action-icon" style="background: none; border: none; color: var(--accent-color); cursor: pointer;" title="Copy Statement (UR)">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <button id="copy-statement-ur-btn" class="action-icon"
+                        style="background: none; border: none; color: var(--accent-color); cursor: pointer;"
+                        title="Copy Statement (UR)">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
                             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                         </svg>
                     </button>
-                    <button id="download-statement-ur-btn" class="action-icon" style="background: none; border: none; color: var(--accent-color); cursor: pointer;" title="Download Statement (UR)">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <button id="download-statement-ur-btn" class="action-icon"
+                        style="background: none; border: none; color: var(--accent-color); cursor: pointer;"
+                        title="Download Statement (UR)">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                             <polyline points="7 10 12 15 17 10"></polyline>
                             <line x1="12" y1="15" x2="12" y2="3"></line>
@@ -211,10 +231,11 @@
                 <table>
                     <thead>
                         <tr style="text-transform: uppercase; font-size: 0.8rem; color: var(--text-secondary);">
-                            <th style="width: 40px; text-align: center;"><input type="checkbox" id="select-all-history" checked style="cursor:pointer;"></th>
+                            <th style="width: 40px; text-align: center;"><input type="checkbox" id="select-all-history"
+                                    checked style="cursor:pointer;"></th>
                             <th data-i18n="th_date">Date</th>
                             <th data-i18n="th_type">Type</th>
-                            <th data-i18n="th_item">Item</th>
+                            <th style="white-space: nowrap;"><span data-i18n="th_item">Item</span> <input type="checkbox" id="select-all-rates" checked style="cursor:pointer; margin-left:4px;" title="Include Rates"></th>
                             <th data-i18n="th_qty">Qty</th>
                             <th data-i18n="th_debit">Debit</th>
                             <th data-i18n="th_credit">Credit</th>

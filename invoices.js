@@ -10,7 +10,7 @@ const dialogMessage = document.getElementById('dialog-message');
 const dialogOkBtn = document.getElementById('dialog-ok-btn');
 const dialogCancelBtn = document.getElementById('dialog-cancel-btn');
 let dialogCallback = null;
-let showOnlyCash = false;
+let showOnlyCash = true;
 
 const showConfirm = (title, message, okText, okColor, callback) => {
     dialogTitle.textContent = title;
