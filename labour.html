@@ -27,6 +27,7 @@
                         style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); cursor: pointer; display: flex; justify-content: center; align-items: center; font-family: 'Noto Nastaliq Urdu', serif; font-weight: 600;">اردو</button>
 
                 </div>
+                <button id="toggle-admin-btn" class="btn-primary" style="width: auto; margin-top: 0; padding: 0.5rem 1.5rem; border-radius: 20px;">Admin Panel</button>
                 <a href="index.html" class="btn-primary"
                     style="width: auto; margin-top: 0; padding: 0.5rem 1.5rem; border-radius: 20px; text-decoration: none; display: inline-block;">Back
                     to main panal</a>
@@ -127,39 +128,6 @@
             </div>
         </section>
 
-        <!-- Admin Settings Section -->
-        <section class="form-section" style="margin-top: 2rem;">
-            <div class="card glass-card">
-                <h2 style="margin-bottom: 1.5rem; color: var(--primary-color);">Admin Panel (Manage Labour)</h2>
-                
-                <div class="form-row">
-                    <!-- Manage Labour Names -->
-                    <div class="form-group half" style="border: 1px dashed var(--card-border); padding: 1rem; border-radius: 8px;">
-                        <h3 style="margin-bottom: 1rem; font-size: 1.1rem;">Manage Labour Names</h3>
-                        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
-                            <input type="text" id="new-labour-name" placeholder="New Labourer Name...">
-                            <button id="add-labour-name-btn" class="btn-primary" style="margin: 0; width: auto; padding: 0.5rem 1rem;">Add</button>
-                        </div>
-                        <ul id="labour-names-list-ul" style="list-style: none; padding: 0; max-height: 200px; overflow-y: auto;">
-                            <!-- Populated from JS -->
-                        </ul>
-                    </div>
-
-                    <!-- Manage Labour Items -->
-                    <div class="form-group half" style="border: 1px dashed var(--card-border); padding: 1rem; border-radius: 8px;">
-                        <h3 style="margin-bottom: 1rem; font-size: 1.1rem;">Manage Work Items (Things)</h3>
-                        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
-                            <input type="text" id="new-labour-item" placeholder="New Item Name...">
-                            <button id="add-labour-item-btn" class="btn-primary" style="margin: 0; width: auto; padding: 0.5rem 1rem;">Add</button>
-                        </div>
-                        <ul id="labour-items-list-ul" style="list-style: none; padding: 0; max-height: 200px; overflow-y: auto;">
-                            <!-- Populated from JS -->
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-
     </main>
 
     <!-- Alert/Confirm Modal -->
@@ -172,6 +140,38 @@
                     style="margin: 0; width: auto; padding: 0.75rem 1.5rem;">Cancel</button>
                 <button id="dialog-ok-btn" class="btn-primary"
                     style="margin: 0; width: auto; padding: 0.75rem 1.5rem;">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Labour Admin Modal -->
+    <div id="labour-admin-modal" class="modal-overlay hidden">
+        <div class="modal-content card glass-card" style="max-width: 800px; width: 90%;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 style="margin: 0;">Admin Panel (Manage Labour)</h2>
+                <button id="close-admin-modal-btn" class="icon-btn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-primary);">&times;</button>
+            </div>
+            
+            <div class="form-row">
+                <!-- Manage Labour Names -->
+                <div class="form-group half" style="border: 1px dashed var(--card-border); padding: 1rem; border-radius: 8px;">
+                    <h3 style="margin-bottom: 1rem; font-size: 1.1rem;">Manage Labour Names</h3>
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                        <input type="text" id="new-labour-name" placeholder="New Labourer Name...">
+                        <button id="add-labour-name-btn" class="btn-primary" style="margin: 0; width: auto; padding: 0.5rem 1rem;">Add</button>
+                    </div>
+                    <ul id="labour-names-list-ul" style="list-style: none; padding: 0; max-height: 200px; overflow-y: auto;"></ul>
+                </div>
+
+                <!-- Manage Labour Items -->
+                <div class="form-group half" style="border: 1px dashed var(--card-border); padding: 1rem; border-radius: 8px;">
+                    <h3 style="margin-bottom: 1rem; font-size: 1.1rem;">Manage Work Items (Things)</h3>
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                        <input type="text" id="new-labour-item" placeholder="New Item Name...">
+                        <button id="add-labour-item-btn" class="btn-primary" style="margin: 0; width: auto; padding: 0.5rem 1rem;">Add</button>
+                    </div>
+                    <ul id="labour-items-list-ul" style="list-style: none; padding: 0; max-height: 200px; overflow-y: auto;"></ul>
+                </div>
             </div>
         </div>
     </div>

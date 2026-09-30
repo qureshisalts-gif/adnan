@@ -138,6 +138,14 @@ document.getElementById('add-labour-item-btn')?.addEventListener('click', () => 
     }
 });
 
+document.getElementById('toggle-admin-btn')?.addEventListener('click', () => {
+    document.getElementById('labour-admin-modal')?.classList.remove('hidden');
+});
+
+document.getElementById('close-admin-modal-btn')?.addEventListener('click', () => {
+    document.getElementById('labour-admin-modal')?.classList.add('hidden');
+});
+
 // Initial Render
 renderLabourNames();
 renderLabourItems();
@@ -169,7 +177,7 @@ const calculateLabourBalance = (name) => {
             if (t.type === 'labour_charge') bal -= total;
             else if (t.type === 'labour_payment') bal += total;
             else if (t.type === 'payment_out') bal += total;
-            else if (t.type === 'sale') bal += total; 
+            else if (t.type === 'sale') bal += total;
             else if (t.type === 'purchase') bal -= total;
             else if (t.type === 'payment_in') bal -= total;
         }
@@ -349,3 +357,6 @@ if (window.fetchDataFromCloudAndRender) {
         }
     });
 }
+
+document.getElementById('toggle-admin-btn')?.addEventListener('click', () => { document.getElementById('labour-admin-modal')?.classList.remove('hidden'); });
+document.getElementById('close-admin-modal-btn')?.addEventListener('click', () => { document.getElementById('labour-admin-modal')?.classList.add('hidden'); });
