@@ -59,13 +59,88 @@ dialogOkBtn.addEventListener('click', () => {
 // Init Date
 labourDate.value = new Date().toISOString().split('T')[0];
 
-// Populate Items Dropdown
-items.forEach(item => {
-    const opt = document.createElement('option');
-    opt.value = item.name;
-    opt.textContent = `${item.name} (Unit: ${item.unit})`;
-    labourItem.appendChild(opt);
+let labourNames = JSON.parse(localStorage.getItem('adnan_labour_names')) || [];
+let labourItems = JSON.parse(localStorage.getItem('adnan_labour_items')) || [];
+
+const renderLabourNames = () => {
+    const ul = document.getElementById('labour-names-list-ul');
+    const datalist = document.getElementById('labour-name-list');
+    if (ul) ul.innerHTML = '';
+    if (datalist) datalist.innerHTML = '';
+    
+    labourNames.forEach(name => {
+        if (ul) {
+            const li = document.createElement('li');
+            li.style = "display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; border-bottom: 1px solid var(--card-border);";
+            li.innerHTML = `<span>${name}</span> <button type="button" class="icon-btn text-red" onclick="removeLabourName('${name}')" style="cursor: pointer; background: none; border: none; color: var(--red);" title="Remove">✖</button>`;
+            ul.appendChild(li);
+        }
+        if (datalist) {
+            const opt = document.createElement('option');
+            opt.value = name;
+            datalist.appendChild(opt);
+        }
+    });
+};
+
+const renderLabourItems = () => {
+    const ul = document.getElementById('labour-items-list-ul');
+    const select = document.getElementById('labour-item');
+    if (ul) ul.innerHTML = '';
+    
+    if (select) select.innerHTML = '<option value="">Select an item...</option>';
+    
+    labourItems.forEach(item => {
+        if (ul) {
+            const li = document.createElement('li');
+            li.style = "display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; border-bottom: 1px solid var(--card-border);";
+            li.innerHTML = `<span>${item}</span> <button type="button" class="icon-btn text-red" onclick="removeLabourItem('${item}')" style="cursor: pointer; background: none; border: none; color: var(--red);" title="Remove">✖</button>`;
+            ul.appendChild(li);
+        }
+        if (select) {
+            const opt = document.createElement('option');
+            opt.value = item;
+            opt.textContent = item;
+            select.appendChild(opt);
+        }
+    });
+};
+
+window.removeLabourName = (name) => {
+    labourNames = labourNames.filter(n => n !== name);
+    localStorage.setItem('adnan_labour_names', JSON.stringify(labourNames));
+    renderLabourNames();
+};
+
+window.removeLabourItem = (item) => {
+    labourItems = labourItems.filter(i => i !== item);
+    localStorage.setItem('adnan_labour_items', JSON.stringify(labourItems));
+    renderLabourItems();
+};
+
+document.getElementById('add-labour-name-btn')?.addEventListener('click', () => {
+    const val = document.getElementById('new-labour-name').value.trim();
+    if (val && !labourNames.includes(val)) {
+        labourNames.push(val);
+        localStorage.setItem('adnan_labour_names', JSON.stringify(labourNames));
+        document.getElementById('new-labour-name').value = '';
+        renderLabourNames();
+    }
 });
+
+document.getElementById('add-labour-item-btn')?.addEventListener('click', () => {
+    const val = document.getElementById('new-labour-item').value.trim();
+    if (val && !labourItems.includes(val)) {
+        labourItems.push(val);
+        localStorage.setItem('adnan_labour_items', JSON.stringify(labourItems));
+        document.getElementById('new-labour-item').value = '';
+        renderLabourItems();
+    }
+});
+
+// Initial Render
+renderLabourNames();
+renderLabourItems();
 
 const calculateTotal = () => {
     const qty = parseFloat(labourQty.value) || 0;
@@ -264,7 +339,8 @@ window.deleteLabourTxn = (id) => {
 if (window.fetchDataFromCloudAndRender) {
     window.fetchDataFromCloudAndRender(() => {
         transactions = window.cloudTransactions || [];
-        initItemDropdown();
+        renderLabourNames();
+        renderLabourItems();
         const name = labourName.value.trim();
         if (name) {
             const bal = calculateLabourBalance(name);
