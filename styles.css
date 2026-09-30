@@ -1,18 +1,4 @@
 :root {
-    --bg-color: #0f172a;
-    --card-bg: rgba(30, 41, 59, 0.7);
-    --card-border: rgba(255, 255, 255, 0.1);
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-    --accent-color: #6366f1;
-    --accent-hover: #4f46e5;
-    --green: #10b981;
-    --red: #ef4444;
-    --input-bg: rgba(15, 23, 42, 0.6);
-    --input-border: rgba(255, 255, 255, 0.2);
-}
-
-[data-theme="light"] {
     --bg-color: #f8fafc;
     --card-bg: #ffffff;
     --card-border: #e2e8f0;
@@ -20,12 +6,30 @@
     --text-secondary: #64748b;
     --accent-color: #4f46e5;
     --accent-hover: #4338ca;
+    --green: #10b981;
+    --red: #ef4444;
     --input-bg: #ffffff;
     --input-border: #cbd5e1;
 }
 
-[data-theme="light"] .blob {
+[data-theme="dark"] {
+    --bg-color: #0f172a;
+    --card-bg: rgba(30, 41, 59, 0.7);
+    --card-border: rgba(255, 255, 255, 0.1);
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --accent-color: #6366f1;
+    --accent-hover: #4f46e5;
+    --input-bg: rgba(15, 23, 42, 0.6);
+    --input-border: rgba(255, 255, 255, 0.2);
+}
+
+.blob {
     opacity: 0.2;
+}
+
+[data-theme="dark"] .blob {
+    opacity: 1;
 }
 
 * {
