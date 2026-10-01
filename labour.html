@@ -20,97 +20,123 @@
     <main class="container">
         <header class="top-nav"
             style="display: flex; justify-content: space-between; margin-bottom: 2rem; align-items: center;">
-            <h1 style="font-size: 2rem;">Labour Management</h1>
+            <h1 style="font-size: 2rem;" data-i18n="labour_management">Labour Management</h1>
             <div style="display: flex; gap: 1rem; align-items: center;">
                 <div class="nav-controls" style="display: flex; gap: 0.5rem; align-items: center;">
                     <button id="lang-toggle-btn" class="icon-btn"
                         style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); cursor: pointer; display: flex; justify-content: center; align-items: center; font-family: 'Noto Nastaliq Urdu', serif; font-weight: 600;">اردو</button>
 
                 </div>
-                <button id="toggle-admin-btn" class="btn-primary" style="width: auto; margin-top: 0; padding: 0.5rem 1.5rem; border-radius: 20px;">Admin Panel</button>
+                <button id="toggle-admin-btn" class="btn-primary" style="width: auto; margin-top: 0; padding: 0.5rem 1.5rem; border-radius: 20px;" data-i18n="nav_admin">Admin Panel</button>
                 <a href="index.html" class="btn-primary"
-                    style="width: auto; margin-top: 0; padding: 0.5rem 1.5rem; border-radius: 20px; text-decoration: none; display: inline-block;">Back
+                    style="width: auto; margin-top: 0; padding: 0.5rem 1.5rem; border-radius: 20px; text-decoration: none; display: inline-block;" data-i18n="nav_back">Back
                     to main panal</a>
             </div>
         </header>
 
         <section class="form-section">
             <div class="card glass-card">
-                <h2>Labour Details</h2>
+                <h2 data-i18n="labour_details">Labour Details</h2>
                 <div class="form-row" style="margin-bottom: 0.5rem;">
                     <div class="form-group half">
-                        <label>Date</label>
+                        <label data-i18n="date">Date</label>
                         <input type="date" id="labour-date">
                     </div>
                     <div class="form-group half">
-                        <label>Labourer Name</label>
-                        <input type="text" id="labour-name" list="labour-name-list" placeholder="e.g. Ali...">
+                        <label data-i18n="labourer_name">Labourer Name</label>
+                        <input type="text" id="labour-name" list="labour-name-list" placeholder="e.g. Ali..." data-i18n="labourer_placeholder">
                         <datalist id="labour-name-list"></datalist>
                     </div>
                 </div>
 
-                <h3 style="margin-top: 1rem; margin-bottom: 0.5rem; color: var(--primary-color); font-size: 1.1rem;">Work Done</h3>
+                <h3 style="margin-top: 1rem; margin-bottom: 0.5rem; color: var(--primary-color); font-size: 1.1rem;" data-i18n="work_done">Work Done</h3>
                 <div class="form-row">
-                    <div class="form-group half">
-                        <label>Work Type</label>
+                    <div class="form-group" style="flex: 1.5;">
+                        <label data-i18n="work_type">Work Type</label>
                         <select id="labour-work-type">
-                            <option value="normal">Normal (No Stock Change)</option>
-                            <option value="unload">Unload (Increases Stock)</option>
-                            <option value="load">Load (Decreases Stock)</option>
+                            <option value="unload" selected data-i18n="wt_unload">Unload (Increases Stock)</option>
+                            <option value="normal" data-i18n="wt_normal">Normal (No Stock Change)</option>
+                            <option value="load" data-i18n="wt_load">Load (Decreases Stock)</option>
                         </select>
                     </div>
-                    <div class="form-group half">
-                        <label>Item</label>
+                    <div class="form-group" style="flex: 2;">
+                        <label data-i18n="th_item">Item</label>
                         <select id="labour-item">
-                            <option value="">Select an item...</option>
+                            <option value="" data-i18n="select_item">Select an item...</option>
                             <!-- Items populated from JS -->
                         </select>
                     </div>
-                    <div class="form-group half">
-                        <label>Quantity</label>
+                    <div class="form-group" style="flex: 1;">
+                        <label data-i18n="quantity">Quantity</label>
                         <input type="number" id="labour-qty" min="1">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label data-i18n="labour_rate">Rate</label>
+                        <input type="number" id="labour-rate" min="0" step="0.01">
+                    </div>
+                    <div class="form-group" style="flex: 1; display: flex; align-items: flex-end;">
+                        <button id="add-to-labour-cart-btn" class="btn-primary" style="margin: 0; padding: 0.5rem 1rem; border-radius: 8px; width: 100%;" data-i18n="btn_add">Add</button>
+                    </div>
+                </div>
+
+                <div id="labour-cart-section" style="margin-bottom: 1rem; padding: 1rem; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; width: 100%; box-sizing: border-box;">
+                    <h4 style="margin-top: 0; margin-bottom: 1rem; color: var(--accent-color); font-size: 1rem;" data-i18n="added_items_list">Added Items List</h4>
+                    <div class="table-container" style="background-color: white; border-radius: 6px; border: 1px solid var(--card-border);">
+                        <table id="labour-cart-table" style="width: 100%; margin: 0; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background-color: var(--card-bg); text-align: left;">
+                                    <th data-i18n="th_item" style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--card-border);">ITEM</th>
+                                    <th data-i18n="th_qty" style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--card-border);">QTY</th>
+                                    <th data-i18n="th_rate" style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--card-border);">RATE</th>
+                                    <th data-i18n="th_total" style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--card-border);">TOTAL</th>
+                                    <th data-i18n="th_action" style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--card-border);">ACTION</th>
+                                </tr>
+                            </thead>
+                            <tbody id="labour-cart-list">
+                                <!-- Cart items go here -->
+                            </tbody>
+                        </table>
+                        <div id="labour-cart-empty" style="text-align: center; padding: 1.5rem; color: #94a3b8; font-size: 0.9rem;">
+                            No items added yet.
+                        </div>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group half">
-                        <label>Labour Rate (per unit)</label>
-                        <input type="number" id="labour-rate" min="0" step="0.01">
-                    </div>
-                    <div class="form-group half">
-                        <label>Load/Unload Fee</label>
+                        <label data-i18n="load_unload_fee">Load/Unload Fee</label>
                         <input type="number" id="labour-extra-fee" min="0" step="0.01">
                     </div>
                     <div class="form-group half">
-                        <label>Total Charges</label>
+                        <label data-i18n="total_charges">Total Charges</label>
                         <input type="text" id="labour-total" value="0.00" readonly>
                     </div>
                 </div>
 
-                <h3 style="margin-top: 1rem; margin-bottom: 0.5rem; color: var(--primary-color); font-size: 1.1rem;">Payment</h3>
+                <h3 style="margin-top: 1rem; margin-bottom: 0.5rem; color: var(--primary-color); font-size: 1.1rem;" data-i18n="payment">Payment</h3>
                 <div class="form-row">
                     <div class="form-group half">
-                        <label>Amount Paid</label>
+                        <label data-i18n="amount_paid">Amount Paid</label>
                         <input type="number" id="labour-paid" min="0" step="0.01">
                     </div>
                     <div class="form-group half">
-                        <label>Payment Method</label>
+                        <label data-i18n="payment_method">Payment Method</label>
                         <select id="labour-payment-method">
                             <option value="-">-</option>
-                            <option value="Cash">Cash</option>
-                            <option value="Bank">Bank Transfer</option>
+                            <option value="Cash" data-i18n="cash">Cash</option>
+                            <option value="Bank" data-i18n="bank">Bank Transfer</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="form-group" style="margin-top: 0.5rem;">
-                    <label>Remaining Balance for Labourer</label>
+                    <label data-i18n="remaining_balance_labour">Remaining Balance for Labourer</label>
                     <input type="text" id="labour-balance" value="0.00" readonly>
-                    <small style="color: var(--text-secondary);">Negative value means we owe them.</small>
+                    <small style="color: var(--text-secondary);" data-i18n="negative_owe">Negative value means we owe them.</small>
                 </div>
 
                 <button id="save-labour-btn" class="btn-gradient"
-                    style="margin-top: 1rem; width: auto; padding: 0.75rem 2rem;">Save Labour Record</button>
+                    style="margin-top: 1rem; width: auto; padding: 0.75rem 2rem;" data-i18n="save_labour_record">Save Labour Record</button>
             </div>
         </section>
 
@@ -128,16 +154,16 @@
                     <table id="history-table">
                         <thead>
                             <tr>
-                                <th>PERSON NAME</th>
-                                <th>DATE</th>
-                                <th>TYPE</th>
-                                <th>ITEM</th>
-                                <th>QTY</th>
-                                <th>WORK TYPE</th>
-                                <th>TOTAL AMT</th>
-                                <th>AMOUNT PAID</th>
-                                <th>REMAINING</th>
-                                <th>ACTIONS</th>
+                                <th data-i18n="th_person">PERSON NAME</th>
+                                <th data-i18n="th_date">DATE</th>
+                                <th data-i18n="th_type">TYPE</th>
+                                <th data-i18n="th_item">ITEM</th>
+                                <th data-i18n="th_qty">QTY</th>
+                                <th data-i18n="th_work_type">WORK TYPE</th>
+                                <th data-i18n="th_total_amt">TOTAL AMT</th>
+                                <th data-i18n="th_amt_paid">AMOUNT PAID</th>
+                                <th data-i18n="th_remaining">REMAINING</th>
+                                <th data-i18n="th_actions">ACTIONS</th>
                             </tr>
                         </thead>
                         <tbody id="history-list">
@@ -155,13 +181,13 @@
     <!-- Alert/Confirm Modal -->
     <div id="dialog-modal" class="modal-overlay hidden">
         <div class="modal-content card glass-card" style="max-width: 400px; text-align: center;">
-            <h2 id="dialog-title" style="margin-bottom: 1rem; border: none;">Notice</h2>
+            <h2 id="dialog-title" style="margin-bottom: 1rem; border: none;" data-i18n="dialog_notice">Notice</h2>
             <p id="dialog-message" style="margin-bottom: 2rem; color: var(--text-secondary);"></p>
             <div style="display: flex; gap: 1rem; justify-content: center;">
                 <button id="dialog-cancel-btn" class="btn-secondary"
-                    style="margin: 0; width: auto; padding: 0.75rem 1.5rem;">Cancel</button>
+                    style="margin: 0; width: auto; padding: 0.75rem 1.5rem;" data-i18n="dialog_cancel">Cancel</button>
                 <button id="dialog-ok-btn" class="btn-primary"
-                    style="margin: 0; width: auto; padding: 0.75rem 1.5rem;">OK</button>
+                    style="margin: 0; width: auto; padding: 0.75rem 1.5rem;" data-i18n="dialog_ok">OK</button>
             </div>
         </div>
     </div>
@@ -170,15 +196,15 @@
     <div id="labour-admin-modal" class="modal-overlay hidden">
         <div class="modal-content card glass-card" style="max-width: 500px; width: 90%;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <h2 style="margin: 0;">Admin Panel (Manage Labour)</h2>
+                <h2 style="margin: 0;" data-i18n="admin_manage_labour">Admin Panel (Manage Labour)</h2>
                 <button id="close-admin-modal-btn" class="icon-btn" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-primary);">&times;</button>
             </div>
             
             <div class="form-group" style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px dashed var(--card-border);">
-                <label style="font-weight: 600; color: var(--accent-color);">Manage Labour Names</label>
+                <label style="font-weight: 600; color: var(--accent-color);" data-i18n="manage_labour_names">Manage Labour Names</label>
                 <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; margin-top: 0.5rem;">
-                    <input type="text" id="new-labour-name" placeholder="e.g. John Doe">
-                    <button id="add-labour-name-btn" class="btn-primary" style="margin: 0; width: auto; padding: 0.5rem 1.5rem; border-radius: 8px;">
+                    <input type="text" id="new-labour-name" placeholder="e.g. John Doe" data-i18n="person_placeholder">
+                    <button id="add-labour-name-btn" class="btn-primary" style="margin: 0; width: auto; padding: 0.5rem 1.5rem; border-radius: 8px;" data-i18n="btn_add">
                         Add
                     </button>
                 </div>
@@ -186,19 +212,19 @@
             </div>
 
             <div class="form-group">
-                <label style="font-weight: 600; color: var(--accent-color);">Manage Work Items (Things)</label>
+                <label style="font-weight: 600; color: var(--accent-color);" data-i18n="manage_work_items">Manage Work Items (Things)</label>
                 
                 <div style="margin-top: 0.5rem; margin-bottom: 1rem;">
-                    <input type="text" id="new-labour-item" placeholder="e.g. black salt, pink salt, white salt">
+                    <input type="text" id="new-labour-item" placeholder="e.g. black salt, pink salt, white salt" data-i18n="item_placeholder">
                 </div>
                 
                 <div class="form-row" style="margin-bottom: 1rem;">
                     <div class="form-group half">
-                        <label>Quantity</label>
+                        <label data-i18n="quantity">Quantity</label>
                         <input type="number" id="new-labour-qty" min="0" step="0.01">
                     </div>
                     <div class="form-group half">
-                        <label>Unit</label>
+                        <label data-i18n="unit">Unit</label>
                         <select id="new-labour-unit">
                             <option value="Kg">Kg</option>
                             <option value="Tons">Tons</option>
@@ -208,7 +234,7 @@
                     </div>
                 </div>
                 <div style="text-align: right; margin-bottom: 1rem;">
-                    <button id="add-labour-item-btn" class="btn-primary" style="margin: 0; width: auto; padding: 0.5rem 1.5rem; border-radius: 8px;">
+                    <button id="add-labour-item-btn" class="btn-primary" style="margin: 0; width: auto; padding: 0.5rem 1.5rem; border-radius: 8px;" data-i18n="btn_add_to_list">
                         Add to List
                     </button>
                 </div>

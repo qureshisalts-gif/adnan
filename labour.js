@@ -171,12 +171,97 @@ document.getElementById('labour-item')?.addEventListener('change', (e) => {
     }
 });
 
-const calculateTotal = () => {
-    const qty = parseFloat(labourQty.value) || 0;
-    const rate = parseFloat(labourRate.value) || 0;
-    const extra = parseFloat(document.getElementById('labour-extra-fee')?.value) || 0;
-    labourTotal.value = ((qty * rate) + extra).toFixed(2);
+let labourCart = [];
+
+const renderLabourCart = () => {
+    const list = document.getElementById('labour-cart-list');
+    const emptyState = document.getElementById('labour-cart-empty');
+    const tableEl = document.getElementById('labour-cart-table');
+    
+    if (!list) return;
+    list.innerHTML = '';
+    
+    if (labourCart.length === 0) {
+        if (emptyState) emptyState.style.display = 'block';
+        if (tableEl) tableEl.style.display = 'none';
+    } else {
+        if (emptyState) emptyState.style.display = 'none';
+        if (tableEl) tableEl.style.display = 'table';
+        
+        labourCart.forEach((item, index) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--card-border);">${item.name}</td>
+                <td style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--card-border);">${item.qty} <small>${item.unit}</small></td>
+                <td style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--card-border);">${item.rate}</td>
+                <td style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--card-border);">${(item.qty * item.rate).toFixed(2)}</td>
+                <td style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--card-border);"><button class="icon-btn text-red" onclick="removeLabourCartItem(${index})" style="background:none; border:none; color: var(--red); cursor: pointer;" title="Remove">🗑️</button></td>
+            `;
+            list.appendChild(tr);
+        });
+    }
+    
+    calculateTotal();
 };
+
+
+
+window.removeLabourCartItem = (index) => {
+    labourCart.splice(index, 1);
+    renderLabourCart();
+};
+
+document.getElementById('add-to-labour-cart-btn')?.addEventListener('click', () => {
+    const selectedItemVal = document.getElementById('labour-item').value;
+    if (!selectedItemVal) {
+        showAlert('Error', 'Please select an item.');
+        return;
+    }
+    const qty = parseFloat(document.getElementById('labour-qty').value) || 0;
+    if (qty <= 0) {
+        showAlert('Error', 'Please enter a valid quantity.');
+        return;
+    }
+    const rate = parseFloat(document.getElementById('labour-rate').value) || 0;
+
+    let itemName = selectedItemVal;
+    let itemUnit = 'unit';
+    // Look up the item in our labourItems list to get the correct unit
+    const foundItem = labourItems.find(i => i.name === selectedItemVal);
+    if (foundItem) {
+        itemUnit = foundItem.unit;
+    } else {
+        // fallback: try JSON parse (legacy)
+        try {
+            const parsed = JSON.parse(selectedItemVal);
+            itemName = parsed.name;
+            itemUnit = parsed.unit;
+        } catch(e) {}
+    }
+
+    labourCart.push({
+        name: itemName,
+        unit: itemUnit,
+        qty: qty,
+        rate: rate
+    });
+
+    document.getElementById('labour-item').value = '';
+    document.getElementById('labour-qty').value = '';
+    document.getElementById('labour-rate').value = '';
+    renderLabourCart();
+});
+
+const calculateTotal = () => {
+    let itemsTotal = 0;
+    labourCart.forEach(i => {
+        itemsTotal += (i.qty * i.rate);
+    });
+    const extra = parseFloat(document.getElementById('labour-extra-fee')?.value) || 0;
+    labourTotal.value = (itemsTotal + extra).toFixed(2);
+};
+
+renderLabourCart();
 
 labourQty.addEventListener('input', calculateTotal);
 labourRate.addEventListener('input', calculateTotal);
@@ -381,25 +466,21 @@ document.getElementById('history-time-filter')?.addEventListener('change', () =>
 saveLabourBtn.addEventListener('click', () => {
     const name = labourName.value.trim();
     const date = labourDate.value || new Date().toISOString().split('T')[0];
+    
     const selectedItemVal = labourItem.value;
-    let itemName = '';
-    let itemUnit = 'unit';
-    if (selectedItemVal) {
-        try {
-            const parsed = JSON.parse(selectedItemVal);
-            itemName = parsed.name;
-            itemUnit = parsed.unit;
-        } catch(e) {
-            itemName = selectedItemVal;
-        }
-    }
     const qty = parseFloat(labourQty.value) || 0;
-    const rate = parseFloat(labourRate.value) || 0;
+    if (selectedItemVal && qty > 0) {
+        document.getElementById('add-to-labour-cart-btn').click();
+    }
+
     const extra = parseFloat(document.getElementById('labour-extra-fee')?.value) || 0;
-    const total = (qty * rate) + extra;
     const paid = parseFloat(labourPaid.value) || 0;
     const method = labourPaymentMethod.value;
     const workType = document.getElementById('labour-work-type')?.value || 'normal';
+
+    let itemsTotal = 0;
+    labourCart.forEach(i => itemsTotal += (i.qty * i.rate));
+    const total = itemsTotal + extra;
 
     if (!name) {
         showAlert('Error', 'Please enter a Labourer Name.');
@@ -407,37 +488,53 @@ saveLabourBtn.addEventListener('click', () => {
     }
 
     if (total === 0 && paid === 0) {
-        showAlert('Error', 'Please enter work done (Quantity & Rate) OR a Payment Amount.');
+        showAlert('Error', 'Please add work items or enter a Payment Amount.');
         return;
     }
 
     const txnId = 'LBR-' + Math.floor(100000 + Math.random() * 900000);
     const timeString = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
-    // Add Labour Charge
+    // Add Labour Charges
     if (total > 0) {
-        if (!itemName) {
-            showAlert('Error', 'Please select the Item they worked on.');
-            return;
+        if (labourCart.length === 0 && extra > 0) {
+            // Edge case: No items, but an extra fee is added
+            transactions.push({
+                id: crypto.randomUUID(),
+                txnId: txnId,
+                time: timeString,
+                type: 'labour_charge',
+                date,
+                personName: name,
+                itemName: 'Extra Fee',
+                price: 0,
+                quantity: 0,
+                unit: 'unit',
+                freight: extra
+            });
+        } else {
+            let txType = 'labour_charge';
+            if (workType === 'load') txType = 'labour_load';
+            else if (workType === 'unload') txType = 'labour_unload';
+
+            labourCart.forEach((item, index) => {
+                // Attach extra fee only to the first item so it's not duplicated
+                const itemFreight = (index === 0) ? extra : 0;
+                transactions.push({
+                    id: crypto.randomUUID(),
+                    txnId: txnId,
+                    time: timeString,
+                    type: txType,
+                    date,
+                    personName: name,
+                    itemName: item.name,
+                    price: item.rate,
+                    quantity: item.qty,
+                    unit: item.unit,
+                    freight: itemFreight
+                });
+            });
         }
-
-        let txType = 'labour_charge';
-        if (workType === 'load') txType = 'labour_load';
-        else if (workType === 'unload') txType = 'labour_unload';
-
-        transactions.push({
-            id: crypto.randomUUID(),
-            txnId: txnId,
-            time: timeString,
-            type: txType,
-            date,
-            personName: name,
-            itemName: itemName,
-            price: rate,
-            quantity: qty,
-            unit: itemUnit,
-            freight: extra
-        });
     }
 
     // Add Payment
@@ -465,10 +562,12 @@ saveLabourBtn.addEventListener('click', () => {
     // Reset Form
     // Do not set default 0 for rate and qty
     const wTypeEl = document.getElementById('labour-work-type');
-    if (wTypeEl) wTypeEl.value = 'normal';
+    if (wTypeEl) wTypeEl.value = 'unload';
     labourItem.value = '';
     labourQty.value = '';
     labourRate.value = '';
+    labourCart = [];
+    renderLabourCart();
     const extraFeeEl = document.getElementById('labour-extra-fee');
     if (extraFeeEl) extraFeeEl.value = '';
     labourTotal.value = '0.00';
