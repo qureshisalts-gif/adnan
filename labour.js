@@ -73,7 +73,7 @@ const renderLabourNames = () => {
     const datalist = document.getElementById('labour-name-list');
     if (ul) ul.innerHTML = '';
     if (datalist) datalist.innerHTML = '';
-    
+
     labourNames.forEach(name => {
         if (ul) {
             const li = document.createElement('li');
@@ -93,9 +93,9 @@ const renderLabourItems = () => {
     const ul = document.getElementById('labour-items-list-ul');
     const select = document.getElementById('labour-item');
     if (ul) ul.innerHTML = '';
-    
+
     if (select) select.innerHTML = '<option value="">Select an item...</option>';
-    
+
     labourItems.forEach(item => {
         if (ul) {
             const li = document.createElement('li');
@@ -138,14 +138,14 @@ document.getElementById('add-labour-item-btn')?.addEventListener('click', () => 
     const nameVal = document.getElementById('new-labour-item').value.trim();
     const qtyVal = parseFloat(document.getElementById('new-labour-qty').value) || 0;
     const unitVal = document.getElementById('new-labour-unit').value || 'Kg';
-    
+
     if (nameVal && !labourItems.some(i => i.name === nameVal)) {
         labourItems.push({ name: nameVal, qty: qtyVal, unit: unitVal });
         localStorage.setItem('adnan_labour_items', JSON.stringify(labourItems));
-        
+
         document.getElementById('new-labour-item').value = '';
         document.getElementById('new-labour-qty').value = '';
-        
+
         renderLabourItems();
     }
 });
@@ -174,11 +174,13 @@ document.getElementById('labour-item')?.addEventListener('change', (e) => {
 const calculateTotal = () => {
     const qty = parseFloat(labourQty.value) || 0;
     const rate = parseFloat(labourRate.value) || 0;
-    labourTotal.value = (qty * rate).toFixed(2);
+    const extra = parseFloat(document.getElementById('labour-extra-fee')?.value) || 0;
+    labourTotal.value = ((qty * rate) + extra).toFixed(2);
 };
 
 labourQty.addEventListener('input', calculateTotal);
 labourRate.addEventListener('input', calculateTotal);
+document.getElementById('labour-extra-fee')?.addEventListener('input', calculateTotal);
 
 const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-PK', {
@@ -202,7 +204,7 @@ const calculateLabourBalance = (name) => {
             cleanName === cleanSearchStr
         );
         if (isMatch) {
-            const total = (t.quantity * t.price);
+            const total = (t.quantity * t.price) + (parseFloat(t.freight) || 0);
             if (t.type === 'labour_charge' || t.type === 'labour_load' || t.type === 'labour_unload') bal -= total;
             else if (t.type === 'labour_payment') bal += total;
             else if (t.type === 'payment_out') bal += total;
@@ -238,7 +240,7 @@ const renderHistory = (name) => {
 
     let currentBalance = 0;
     personTxns.forEach(t => {
-        const total = (t.quantity * t.price);
+        const total = (t.quantity * t.price) + (parseFloat(t.freight) || 0);
         if (t.type === 'labour_charge' || t.type === 'labour_load' || t.type === 'labour_unload') currentBalance -= total;
         else if (t.type === 'labour_payment') currentBalance += total;
         else if (t.type === 'payment_out') currentBalance += total;
@@ -303,7 +305,7 @@ const renderHistory = (name) => {
     historyList.innerHTML = '';
     combinedTxns.forEach(item => {
         const tr = document.createElement('tr');
-        
+
         const c = item.charge;
         const p = item.payment;
         const base = c || p;
@@ -320,21 +322,31 @@ const renderHistory = (name) => {
         const dispPersonName = base.personName || name;
         const dispItem = c ? c.itemName : '-';
         const dispQty = c ? `${c.quantity} <span style="font-size: 0.85em; color: var(--text-primary);">${c.unit || 'Kg'}</span>` : '-';
-        
+
         let dispWorkType = '-';
         if (c) {
             if (c.type === 'labour_load') dispWorkType = 'Load';
             else if (c.type === 'labour_unload') dispWorkType = 'Unload';
+            else dispWorkType = 'Normal';
+            
+            const extraFee = parseFloat(c.freight) || 0;
+            if (extraFee > 0) {
+                dispWorkType += `<br><small class="text-secondary">Fee: ${formatCurrency(extraFee)}</small>`;
+            }
         } else if (p && !c) {
             dispWorkType = (p.itemName.split('/')[1] || '-').trim();
         }
 
-        const chargeAmt = c ? formatCurrency(c.quantity * c.price) : '-';
-        const paidAmt = p ? formatCurrency(p.quantity * p.price) : '-';
+        const chargeAmt = c ? formatCurrency((c.quantity * c.price) + (parseFloat(c.freight) || 0)) : '-';
+        const paidAmt = p ? formatCurrency((p.quantity * p.price) + (parseFloat(p.freight) || 0)) : '-';
+
+        const dateObj = new Date(item.date);
+        const dayName = !isNaN(dateObj) ? dateObj.toLocaleDateString('en-US', { weekday: 'short' }) : '';
+        const timeStr = item.time ? (dayName ? `${dayName}, ${item.time}` : item.time) : dayName;
 
         tr.innerHTML = `
             <td>${dispPersonName}</td>
-            <td>${item.date}<br><small class="text-secondary">${item.time || ''}</small></td>
+            <td>${item.date}<br><small class="text-secondary">${timeStr}</small></td>
             <td>${typeBadge}</td>
             <td><strong>${dispItem}</strong></td>
             <td>${dispQty}</td>
@@ -369,10 +381,22 @@ document.getElementById('history-time-filter')?.addEventListener('change', () =>
 saveLabourBtn.addEventListener('click', () => {
     const name = labourName.value.trim();
     const date = labourDate.value || new Date().toISOString().split('T')[0];
-    const itemName = labourItem.value;
+    const selectedItemVal = labourItem.value;
+    let itemName = '';
+    let itemUnit = 'unit';
+    if (selectedItemVal) {
+        try {
+            const parsed = JSON.parse(selectedItemVal);
+            itemName = parsed.name;
+            itemUnit = parsed.unit;
+        } catch(e) {
+            itemName = selectedItemVal;
+        }
+    }
     const qty = parseFloat(labourQty.value) || 0;
     const rate = parseFloat(labourRate.value) || 0;
-    const total = qty * rate;
+    const extra = parseFloat(document.getElementById('labour-extra-fee')?.value) || 0;
+    const total = (qty * rate) + extra;
     const paid = parseFloat(labourPaid.value) || 0;
     const method = labourPaymentMethod.value;
     const workType = document.getElementById('labour-work-type')?.value || 'normal';
@@ -396,7 +420,7 @@ saveLabourBtn.addEventListener('click', () => {
             showAlert('Error', 'Please select the Item they worked on.');
             return;
         }
-        
+
         let txType = 'labour_charge';
         if (workType === 'load') txType = 'labour_load';
         else if (workType === 'unload') txType = 'labour_unload';
@@ -411,8 +435,8 @@ saveLabourBtn.addEventListener('click', () => {
             itemName: itemName,
             price: rate,
             quantity: qty,
-            unit: items.find(i => i.name === itemName)?.unit || 'unit',
-            freight: 0
+            unit: itemUnit,
+            freight: extra
         });
     }
 
@@ -445,6 +469,8 @@ saveLabourBtn.addEventListener('click', () => {
     labourItem.value = '';
     labourQty.value = '';
     labourRate.value = '';
+    const extraFeeEl = document.getElementById('labour-extra-fee');
+    if (extraFeeEl) extraFeeEl.value = '';
     labourTotal.value = '0.00';
     labourPaid.value = '';
     labourPaymentMethod.value = '-';
