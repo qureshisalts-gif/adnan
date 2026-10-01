@@ -99,6 +99,7 @@ const getUniquePersons = () => {
     const sortedAsc = [...transactions].sort((a, b) => new Date(a.date) - new Date(b.date) || a.id.localeCompare(b.id));
 
     sortedAsc.forEach(t => {
+        if (t.type.startsWith('labour_')) return;
         if (t.personName) {
             const name = t.personName.trim();
             if (!persons.find(p => p.toLowerCase() === name.toLowerCase())) {
@@ -172,7 +173,10 @@ const migratePersonNames = () => {
     const personsMap = new Map();
 
     const allPersons = [];
-    transactions.forEach(t => { if (t.personName && t.personName.toLowerCase() !== 'cash customer') allPersons.push(t.personName.trim()); });
+    transactions.forEach(t => { 
+        if (t.type.startsWith('labour_')) return;
+        if (t.personName && t.personName.toLowerCase() !== 'cash customer') allPersons.push(t.personName.trim()); 
+    });
     items.forEach(i => { if (i.personName && i.personName.toLowerCase() !== 'cash customer') allPersons.push(i.personName.trim()); });
 
     const uniqueCleanNames = Array.from(new Set(allPersons.map(name => {
@@ -198,6 +202,7 @@ const migratePersonNames = () => {
     });
 
     transactions.forEach(t => {
+        if (t.type.startsWith('labour_')) return;
         if (t.personName && t.personName.toLowerCase() !== 'cash customer') {
             const cleanBase = t.personName.trim().replace(/^\d+\s*-\s*/, '').toLowerCase();
             const target = personsMap.get(cleanBase);
@@ -538,8 +543,8 @@ const calculateItemStock = (itemName, personName = null) => {
             if (u === 'mun' || u === 'bag (40kg)') qtyInKg = t.quantity * 40;
             else if (u === 'bag (50kg)') qtyInKg = t.quantity * 50;
 
-            if (t.type === 'purchase') stockIn += qtyInKg;
-            else if (t.type === 'sale') stockOut += qtyInKg;
+            if (t.type === 'purchase' || t.type === 'labour_unload') stockIn += qtyInKg;
+            else if (t.type === 'sale' || t.type === 'labour_load') stockOut += qtyInKg;
         }
     });
     return { stockIn, stockOut, currentStock: stockIn - stockOut };
@@ -707,6 +712,7 @@ const calculatePersonBalance = (personName) => {
 
     let bal = 0;
     sortedAsc.forEach(t => {
+        if (t.type.startsWith('labour_')) return;
         const rawName = (t.personName || '').trim().toLowerCase();
         const cleanName = rawName.replace(/^\d+\s*-\s*/, '').trim();
 
@@ -726,8 +732,6 @@ const calculatePersonBalance = (personName) => {
             else if (t.type === 'purchase') bal -= total;
             else if (t.type === 'payment_out') bal += total;
             else if (t.type === 'payment_in') bal -= total;
-            else if (t.type === 'labour_charge') bal -= total;
-            else if (t.type === 'labour_payment') bal += total;
         }
     });
     return bal;
@@ -750,6 +754,7 @@ const renderHistory = (filterText = '') => {
     const cleanSearchStr = searchStr.replace(/^\d+\s*-\s*/, '').trim();
 
     const filteredTransactions = transactions.filter(t => {
+        if (t.type.startsWith('labour_')) return false;
         const name = (t.personName || '').trim().toLowerCase();
         const cleanName = name.replace(/^\d+\s*-\s*/, '').trim();
         const isAutoPayment = t.itemName && t.itemName.startsWith('Payment /');
@@ -790,8 +795,6 @@ const renderHistory = (filterText = '') => {
             else if (t.type === 'purchase') currentBalance -= total;
             else if (t.type === 'payment_out') currentBalance += total;
             else if (t.type === 'payment_in') currentBalance -= total;
-            else if (t.type === 'labour_charge') currentBalance -= total;
-            else if (t.type === 'labour_payment') currentBalance += total;
 
             t._runningBalance = currentBalance;
         });
@@ -1483,11 +1486,11 @@ updateItemTotals();
 renderCart();
 
 if (window.fetchDataFromCloudAndRender) {
-    const renderCallback = () => {
+    const renderCallback = (preFetchSyncedTxns, preFetchSyncedItms) => {
         const cloudTxns = window.cloudTransactions || [];
         const cloudItms = window.cloudItems || [];
 
-        const syncedTxns = new Set(JSON.parse(localStorage.getItem('adnan_synced_txns') || '[]'));
+        const syncedTxns = preFetchSyncedTxns || new Set(JSON.parse(localStorage.getItem('adnan_synced_txns') || '[]'));
         const cloudTxnSet = new Set(cloudTxns.map(t => t.id));
 
         const txnsMap = new Map();
@@ -1498,7 +1501,7 @@ if (window.fetchDataFromCloudAndRender) {
         cloudTxns.forEach(t => txnsMap.set(t.id, { ...t }));
         transactions = Array.from(txnsMap.values());
 
-        const syncedItms = new Set(JSON.parse(localStorage.getItem('adnan_synced_items') || '[]'));
+        const syncedItms = preFetchSyncedItms || new Set(JSON.parse(localStorage.getItem('adnan_synced_items') || '[]'));
         const cloudItmSet = new Set(cloudItms.map(i => i.id));
 
         const itmsMap = new Map();
@@ -1558,6 +1561,7 @@ if (legerBtn && legerModal) {
         let bal = 0;
         const searchName = pName.trim().toLowerCase();
         transactions.forEach(t => {
+            if (t.type.startsWith('labour_')) return;
             const tName = (t.personName || '').replace(/^\d+\s*-\s*/, '').trim().toLowerCase();
             if (tName === searchName || (t.personName || '').trim().toLowerCase() === searchName) {
                 const total = (t.quantity * t.price) + (parseFloat(t.freight) || 0);
@@ -1565,8 +1569,6 @@ if (legerBtn && legerModal) {
                 else if (t.type === 'purchase') bal -= total;
                 else if (t.type === 'payment_out') bal += total;
                 else if (t.type === 'payment_in') bal -= total;
-                else if (t.type === 'labour_charge') bal -= total;
-                else if (t.type === 'labour_payment') bal += total;
             }
         });
         return bal;

@@ -1,4 +1,4 @@
-let transactions = [];
+let transactions = JSON.parse(localStorage.getItem('adnan_transactions')) || [];
 const invoiceList = document.getElementById('invoice-list');
 const invoiceSearch = document.getElementById('invoice-search');
 const invoiceEmptyState = document.getElementById('invoice-empty-state');
@@ -63,8 +63,12 @@ const renderInvoices = (filterText = '') => {
     const invoiceDateSearch = document.getElementById('invoice-date-search');
     const filterDate = invoiceDateSearch ? invoiceDateSearch.value : '';
 
-    // Hide zero-amount dummy transactions like "Profile Created"
-    let filteredTransactions = transactions.filter(t => !(t.type?.startsWith('payment') && t.price === 0));
+    // Hide zero-amount dummy transactions and labour history from the main invoice section
+    let filteredTransactions = transactions.filter(t => 
+        !(t.type?.startsWith('payment') && t.price === 0) && 
+        t.type !== 'labour_charge' && 
+        t.type !== 'labour_payment'
+    );
 
     if (filterDate) {
         filteredTransactions = filteredTransactions.filter(t => t.date === filterDate);
@@ -74,7 +78,7 @@ const renderInvoices = (filterText = '') => {
         const filterLower = filterText.trim().toLowerCase();
         const isNumeric = /^\d+$/.test(filterLower);
 
-        filteredTransactions = transactions.filter(t => {
+        filteredTransactions = filteredTransactions.filter(t => {
             const name = t.personName || '';
             const txnId = t.txnId || '';
 
@@ -309,8 +313,19 @@ if (filterCashBtn) {
 renderInvoices();
 
 if (window.fetchDataFromCloudAndRender) {
-    const renderCallback = () => {
-        transactions = window.cloudTransactions || [];
+    const renderCallback = (preFetchSyncedTxns) => {
+        const cloudTxns = window.cloudTransactions || [];
+        const syncedTxns = preFetchSyncedTxns || new Set(JSON.parse(localStorage.getItem('adnan_synced_txns') || '[]'));
+        const cloudTxnSet = new Set(cloudTxns.map(t => t.id));
+
+        const txnsMap = new Map();
+        transactions.forEach(t => {
+            if (syncedTxns.has(t.id) && !cloudTxnSet.has(t.id)) return;
+            txnsMap.set(t.id, t);
+        });
+        cloudTxns.forEach(t => txnsMap.set(t.id, { ...t }));
+        transactions = Array.from(txnsMap.values());
+        localStorage.setItem('adnan_transactions', JSON.stringify(transactions));
         renderInvoices(invoiceSearch.value.trim());
     };
 

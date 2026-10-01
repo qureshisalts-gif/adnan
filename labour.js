@@ -1,5 +1,5 @@
-let transactions = [];
-let items = [];
+let transactions = JSON.parse(localStorage.getItem('adnan_transactions')) || [];
+let items = JSON.parse(localStorage.getItem('adnan_items')) || [];
 
 // Form Elements
 const labourDate = document.getElementById('labour-date');
@@ -190,12 +190,20 @@ const formatCurrency = (amount) => {
 
 const calculateLabourBalance = (name) => {
     if (!name) return 0;
-    const nameLower = name.toLowerCase();
+    const searchStr = name.trim().toLowerCase();
+    const cleanSearchStr = searchStr.replace(/^\d+\s*-\s*/, '').trim();
     let bal = 0;
     transactions.forEach(t => {
-        if ((t.personName || '').toLowerCase() === nameLower) {
+        const rawName = (t.personName || '').trim().toLowerCase();
+        const cleanName = rawName.replace(/^\d+\s*-\s*/, '').trim();
+        const isMatch = searchStr && (
+            rawName === searchStr ||
+            rawName.startsWith(`${searchStr} -`) ||
+            cleanName === cleanSearchStr
+        );
+        if (isMatch) {
             const total = (t.quantity * t.price);
-            if (t.type === 'labour_charge') bal -= total;
+            if (t.type === 'labour_charge' || t.type === 'labour_load' || t.type === 'labour_unload') bal -= total;
             else if (t.type === 'labour_payment') bal += total;
             else if (t.type === 'payment_out') bal += total;
             else if (t.type === 'sale') bal += total;
@@ -211,10 +219,47 @@ const renderHistory = (name) => {
         historySection.classList.add('hidden');
         return;
     }
-    const nameLower = name.toLowerCase();
+    const searchStr = name.trim().toLowerCase();
+    const cleanSearchStr = searchStr.replace(/^\d+\s*-\s*/, '').trim();
+
+    // First get all person txns to calculate running balance accurately
+    let personTxns = transactions.filter(t => {
+        const rawName = (t.personName || '').trim().toLowerCase();
+        const cleanName = rawName.replace(/^\d+\s*-\s*/, '').trim();
+        return searchStr && (
+            rawName === searchStr ||
+            rawName.startsWith(`${searchStr} -`) ||
+            cleanName === cleanSearchStr
+        );
+    });
+
+    // Sort ascending by date to calculate running balance
+    personTxns.sort((a, b) => new Date(a.date) - new Date(b.date) || a.id.localeCompare(b.id));
+
+    let currentBalance = 0;
+    personTxns.forEach(t => {
+        const total = (t.quantity * t.price);
+        if (t.type === 'labour_charge' || t.type === 'labour_load' || t.type === 'labour_unload') currentBalance -= total;
+        else if (t.type === 'labour_payment') currentBalance += total;
+        else if (t.type === 'payment_out') currentBalance += total;
+        else if (t.type === 'sale') currentBalance += total;
+        else if (t.type === 'purchase') currentBalance -= total;
+        else if (t.type === 'payment_in') currentBalance -= total;
+        t._runningBalance = currentBalance;
+    });
 
     // Filter only labour related transactions
-    const txns = transactions.filter(t => (t.personName || '').toLowerCase() === nameLower && (t.type === 'labour_charge' || t.type === 'labour_payment'));
+    let txns = personTxns.filter(t => t.type.startsWith('labour_'));
+
+    const timeFilter = document.getElementById('history-time-filter')?.value || 'all';
+    if (timeFilter === 'week') {
+        const today = new Date();
+        const oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+        txns = txns.filter(t => {
+            const d = new Date(t.date);
+            return d >= oneWeekAgo && d <= today;
+        });
+    }
 
     historySection.classList.remove('hidden');
     historyLabourName.textContent = name;
@@ -229,37 +274,76 @@ const renderHistory = (name) => {
     historyEmptyState.classList.add('hidden');
     document.querySelector('.table-container').classList.remove('hidden');
 
-    // Sort descending
-    txns.sort((a, b) => new Date(b.date) - new Date(a.date) || b.id.localeCompare(a.id));
+    // Group txns by txnId
+    const groups = {};
+    txns.forEach(t => {
+        const key = t.txnId || t.id;
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(t);
+    });
+
+    const combinedTxns = Object.values(groups).map(group => {
+        const charge = group.find(t => t.type !== 'labour_payment');
+        const payment = group.find(t => t.type === 'labour_payment');
+        const base = charge || payment;
+        return {
+            txnId: base.txnId || base.id,
+            date: base.date,
+            time: base.time,
+            charge: charge,
+            payment: payment,
+            // If payment exists, it was processed last, so it holds the final running balance
+            _runningBalance: payment ? payment._runningBalance : charge._runningBalance
+        };
+    });
+
+    // Sort descending for display
+    combinedTxns.sort((a, b) => new Date(b.date) - new Date(a.date) || b.txnId.localeCompare(a.txnId));
 
     historyList.innerHTML = '';
-    txns.forEach(t => {
+    combinedTxns.forEach(item => {
         const tr = document.createElement('tr');
-        const total = formatCurrency(t.quantity * t.price);
+        
+        const c = item.charge;
+        const p = item.payment;
+        const base = c || p;
 
         let typeBadge = '';
-        let amountHtml = '';
-
-        if (t.type === 'labour_charge') {
-            typeBadge = `<span class="badge badge-sale">Labour Work</span>`;
-            amountHtml = `<span style="font-weight: 600; color: var(--green);">+${total}</span>`;
-        } else {
-            typeBadge = `<span class="badge badge-payment-out">Payment Paid</span>`;
-            amountHtml = `<span style="font-weight: 600; color: var(--red);">-${total}</span>`;
+        if (c && p) {
+            typeBadge = `<span class="badge badge-sale" style="background-color: #d1fae5; color: #059669; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Work & Payment</span>`;
+        } else if (c) {
+            typeBadge = `<span class="badge badge-sale" style="background-color: #d1fae5; color: #059669; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Labour Work</span>`;
+        } else if (p) {
+            typeBadge = `<span class="badge badge-payment-out" style="background-color: #fee2e2; color: #dc2626; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Payment Paid</span>`;
         }
 
-        let detailsHtml = `<strong>${t.itemName}</strong><br><small class="text-secondary">${t.quantity} unit(s) @ ${t.price}</small>`;
-        if (t.type === 'labour_payment') {
-            detailsHtml = `<strong>${t.itemName}</strong>`;
+        const dispPersonName = base.personName || name;
+        const dispItem = c ? c.itemName : '-';
+        const dispQty = c ? `${c.quantity} <span style="font-size: 0.85em; color: var(--text-primary);">${c.unit || 'Kg'}</span>` : '-';
+        
+        let dispWorkType = '-';
+        if (c) {
+            if (c.type === 'labour_load') dispWorkType = 'Load';
+            else if (c.type === 'labour_unload') dispWorkType = 'Unload';
+        } else if (p && !c) {
+            dispWorkType = (p.itemName.split('/')[1] || '-').trim();
         }
+
+        const chargeAmt = c ? formatCurrency(c.quantity * c.price) : '-';
+        const paidAmt = p ? formatCurrency(p.quantity * p.price) : '-';
 
         tr.innerHTML = `
-            <td>${t.date}<br><small class="text-secondary">${t.time || ''}</small></td>
+            <td>${dispPersonName}</td>
+            <td>${item.date}<br><small class="text-secondary">${item.time || ''}</small></td>
             <td>${typeBadge}</td>
-            <td>${detailsHtml}</td>
-            <td>${amountHtml}</td>
+            <td><strong>${dispItem}</strong></td>
+            <td>${dispQty}</td>
+            <td>${dispWorkType}</td>
+            <td><span style="font-weight: 600; color: var(--green);">${c ? '+' + chargeAmt : chargeAmt}</span></td>
+            <td><span style="font-weight: 600; color: var(--red);">${p ? '-' + paidAmt : paidAmt}</span></td>
+            <td style="font-weight: 600;">${formatCurrency(item._runningBalance)}</td>
             <td>
-                <button class="action-icon text-red" style="background: none; border: none; cursor: pointer; color: var(--red);" onclick="deleteLabourTxn('${t.id}')" title="Delete">
+                <button class="action-icon text-red" style="background: none; border: none; cursor: pointer; color: var(--red);" onclick="deleteLabourTxnGroup('${item.txnId}')" title="Delete">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                 </button>
             </td>
@@ -275,6 +359,13 @@ labourName.addEventListener('input', (e) => {
     renderHistory(name);
 });
 
+document.getElementById('history-time-filter')?.addEventListener('change', () => {
+    const name = labourName.value.trim();
+    if (name) {
+        renderHistory(name);
+    }
+});
+
 saveLabourBtn.addEventListener('click', () => {
     const name = labourName.value.trim();
     const date = labourDate.value || new Date().toISOString().split('T')[0];
@@ -284,6 +375,7 @@ saveLabourBtn.addEventListener('click', () => {
     const total = qty * rate;
     const paid = parseFloat(labourPaid.value) || 0;
     const method = labourPaymentMethod.value;
+    const workType = document.getElementById('labour-work-type')?.value || 'normal';
 
     if (!name) {
         showAlert('Error', 'Please enter a Labourer Name.');
@@ -304,11 +396,16 @@ saveLabourBtn.addEventListener('click', () => {
             showAlert('Error', 'Please select the Item they worked on.');
             return;
         }
+        
+        let txType = 'labour_charge';
+        if (workType === 'load') txType = 'labour_load';
+        else if (workType === 'unload') txType = 'labour_unload';
+
         transactions.push({
             id: crypto.randomUUID(),
             txnId: txnId,
             time: timeString,
-            type: 'labour_charge',
+            type: txType,
             date,
             personName: name,
             itemName: itemName,
@@ -337,27 +434,37 @@ saveLabourBtn.addEventListener('click', () => {
     }
 
     if (window.syncTransactionsToCloud) window.syncTransactionsToCloud(transactions);
+    localStorage.setItem('adnan_transactions', JSON.stringify(transactions));
 
     showAlert('Success', 'Labour record saved successfully.');
 
     // Reset Form
     // Do not set default 0 for rate and qty
+    const wTypeEl = document.getElementById('labour-work-type');
+    if (wTypeEl) wTypeEl.value = 'normal';
     labourItem.value = '';
     labourQty.value = '';
     labourRate.value = '';
     labourTotal.value = '0.00';
     labourPaid.value = '';
-    labourPaymentMethod.value = 'Cash';
-    document.getElementById('labour-bank-container').style.display = 'none';
+    labourPaymentMethod.value = '-';
+    const bankContainer = document.getElementById('labour-bank-container');
+    if (bankContainer) {
+        bankContainer.style.display = 'none';
+    }
     const bal = calculateLabourBalance(name);
     labourBalance.value = bal.toFixed(2);
     renderHistory(name);
 });
 
-window.deleteLabourTxn = (id) => {
+window.deleteLabourTxnGroup = (txnId) => {
     showConfirm('Delete Transaction', 'Are you sure you want to delete this labour record?', 'Delete', 'var(--red)', () => {
-        transactions = transactions.filter(t => t.id !== id);
-        if (window.deleteSpecificTransactionFromCloud) window.deleteSpecificTransactionFromCloud(id);
+        const txnsToDelete = transactions.filter(t => (t.txnId === txnId) || (t.id === txnId));
+        transactions = transactions.filter(t => (t.txnId !== txnId) && (t.id !== txnId));
+        localStorage.setItem('adnan_transactions', JSON.stringify(transactions));
+        if (window.deleteSpecificTransactionFromCloud) {
+            txnsToDelete.forEach(t => window.deleteSpecificTransactionFromCloud(t.id));
+        }
         const name = labourName.value.trim();
         const bal = calculateLabourBalance(name);
         labourBalance.value = bal.toFixed(2);
@@ -366,8 +473,19 @@ window.deleteLabourTxn = (id) => {
 };
 
 if (window.fetchDataFromCloudAndRender) {
-    window.fetchDataFromCloudAndRender(() => {
-        transactions = window.cloudTransactions || [];
+    window.fetchDataFromCloudAndRender((preFetchSyncedTxns) => {
+        const cloudTxns = window.cloudTransactions || [];
+        const syncedTxns = preFetchSyncedTxns || new Set(JSON.parse(localStorage.getItem('adnan_synced_txns') || '[]'));
+        const cloudTxnSet = new Set(cloudTxns.map(t => t.id));
+
+        const txnsMap = new Map();
+        transactions.forEach(t => {
+            if (syncedTxns.has(t.id) && !cloudTxnSet.has(t.id)) return;
+            txnsMap.set(t.id, t);
+        });
+        cloudTxns.forEach(t => txnsMap.set(t.id, { ...t }));
+        transactions = Array.from(txnsMap.values());
+        localStorage.setItem('adnan_transactions', JSON.stringify(transactions));
         renderLabourNames();
         renderLabourItems();
         const name = labourName.value.trim();

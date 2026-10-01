@@ -865,11 +865,11 @@ renderDeliveries();
 if (dailyPaymentDate) renderDailyPayments(dailyPaymentDate.value);
 
 if (window.fetchDataFromCloudAndRender) {
-    const renderCallback = () => {
+    const renderCallback = (preFetchSyncedTxns, preFetchSyncedItms) => {
         const cloudTxns = window.cloudTransactions || [];
         const cloudItms = window.cloudItems || [];
         
-        const syncedTxns = new Set(JSON.parse(localStorage.getItem('adnan_synced_txns') || '[]'));
+        const syncedTxns = preFetchSyncedTxns || new Set(JSON.parse(localStorage.getItem('adnan_synced_txns') || '[]'));
         const cloudTxnSet = new Set(cloudTxns.map(t => t.id));
 
         const txnsMap = new Map();
@@ -880,7 +880,7 @@ if (window.fetchDataFromCloudAndRender) {
         cloudTxns.forEach(t => txnsMap.set(t.id, { ...t }));
         transactions = Array.from(txnsMap.values());
 
-        const syncedItms = new Set(JSON.parse(localStorage.getItem('adnan_synced_items') || '[]'));
+        const syncedItms = preFetchSyncedItms || new Set(JSON.parse(localStorage.getItem('adnan_synced_items') || '[]'));
         const cloudItmSet = new Set(cloudItms.map(i => i.id));
 
         const itmsMap = new Map();

@@ -1,6 +1,19 @@
 const SUPABASE_URL = 'https://mmozpyrukczlmwzcrkpj.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_Wv0WBlZw-AzowPfWisusNg_NzoJd6c4';
 
+// Polyfill for crypto.randomUUID for file:/// and non-https environments
+if (!window.crypto) {
+    window.crypto = {};
+}
+if (!window.crypto.randomUUID) {
+    window.crypto.randomUUID = function() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    };
+}
+
 // Wait for Supabase to be available before initializing
 let supabaseClient = null;
 
@@ -197,13 +210,43 @@ window.fetchDataFromCloudAndRender = async (renderCallback) => {
         const supabase = getSupabase();
         if (!supabase) return;
 
-        // Fetch transactions
-        const { data: txns, error: txnsError } = await supabase.from('transactions').select('*');
-        if (txnsError) throw txnsError;
+        // Capture sync state BEFORE the fetch starts to avoid race conditions
+        const preFetchSyncedTxns = new Set(JSON.parse(localStorage.getItem('adnan_synced_txns') || '[]'));
+        const preFetchSyncedItms = new Set(JSON.parse(localStorage.getItem('adnan_synced_items') || '[]'));
+
+        // Fetch transactions with pagination to avoid 1000 row limit
+        let allTxns = [];
+        let fromTxns = 0;
+        const stepTxns = 1000;
+        while (true) {
+            const { data: pageTxns, error: txnsError } = await supabase.from('transactions').select('*').range(fromTxns, fromTxns + stepTxns - 1);
+            if (txnsError) throw txnsError;
+            if (pageTxns && pageTxns.length > 0) {
+                allTxns = allTxns.concat(pageTxns);
+                if (pageTxns.length < stepTxns) break;
+                fromTxns += stepTxns;
+            } else {
+                break;
+            }
+        }
+        const txns = allTxns;
         
-        // Fetch items
-        const { data: itms, error: itmsError } = await supabase.from('items').select('*');
-        if (itmsError) throw itmsError;
+        // Fetch items with pagination to avoid 1000 row limit
+        let allItms = [];
+        let fromItms = 0;
+        const stepItms = 1000;
+        while (true) {
+            const { data: pageItms, error: itmsError } = await supabase.from('items').select('*').range(fromItms, fromItms + stepItms - 1);
+            if (itmsError) throw itmsError;
+            if (pageItms && pageItms.length > 0) {
+                allItms = allItms.concat(pageItms);
+                if (pageItms.length < stepItms) break;
+                fromItms += stepItms;
+            } else {
+                break;
+            }
+        }
+        const itms = allItms;
         
         let shouldRender = false;
         
@@ -256,7 +299,7 @@ window.fetchDataFromCloudAndRender = async (renderCallback) => {
         
         // Re-render the UI with the fresh data
         if (shouldRender && renderCallback) {
-            renderCallback();
+            renderCallback(preFetchSyncedTxns, preFetchSyncedItms);
         }
         
         // Show a popup message once per day
