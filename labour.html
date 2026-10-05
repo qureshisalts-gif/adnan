@@ -51,14 +51,6 @@
 
                 <h3 style="margin-top: 1rem; margin-bottom: 0.5rem; color: var(--primary-color); font-size: 1.1rem;" data-i18n="work_done">Work Done</h3>
                 <div class="form-row">
-                    <div class="form-group" style="flex: 1.5;">
-                        <label data-i18n="work_type">Work Type</label>
-                        <select id="labour-work-type">
-                            <option value="unload" selected data-i18n="wt_unload">Unload (Increases Stock)</option>
-                            <option value="normal" data-i18n="wt_normal">Normal (No Stock Change)</option>
-                            <option value="load" data-i18n="wt_load">Load (Decreases Stock)</option>
-                        </select>
-                    </div>
                     <div class="form-group" style="flex: 2;">
                         <label data-i18n="th_item">Item</label>
                         <select id="labour-item">
@@ -68,7 +60,7 @@
                     </div>
                     <div class="form-group" style="flex: 1;">
                         <label data-i18n="quantity">Quantity</label>
-                        <input type="number" id="labour-qty" min="1">
+                        <input type="number" id="labour-qty" min="0">
                     </div>
                     <div class="form-group" style="flex: 1;">
                         <label data-i18n="labour_rate">Rate</label>
@@ -103,11 +95,7 @@
                 </div>
 
                 <div class="form-row">
-                    <div class="form-group half">
-                        <label data-i18n="load_unload_fee">Load/Unload Fee</label>
-                        <input type="number" id="labour-extra-fee" min="0" step="0.01">
-                    </div>
-                    <div class="form-group half">
+                    <div class="form-group">
                         <label data-i18n="total_charges">Total Charges</label>
                         <input type="text" id="labour-total" value="0.00" readonly>
                     </div>

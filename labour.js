@@ -166,7 +166,7 @@ document.getElementById('labour-item')?.addEventListener('change', (e) => {
     const selectedName = e.target.value;
     const found = labourItems.find(i => i.name === selectedName);
     if (found) {
-        if (found.qty > 0) document.getElementById('labour-qty').value = found.qty;
+        document.getElementById('labour-qty').value = found.qty !== undefined && found.qty !== '' ? found.qty : '';
         calculateTotal();
     }
 });
@@ -177,30 +177,30 @@ const renderLabourCart = () => {
     const list = document.getElementById('labour-cart-list');
     const emptyState = document.getElementById('labour-cart-empty');
     const tableEl = document.getElementById('labour-cart-table');
-    
+
     if (!list) return;
     list.innerHTML = '';
-    
+
     if (labourCart.length === 0) {
         if (emptyState) emptyState.style.display = 'block';
         if (tableEl) tableEl.style.display = 'none';
     } else {
         if (emptyState) emptyState.style.display = 'none';
-        if (tableEl) tableEl.style.display = 'table';
-        
+        if (tableEl) tableEl.style.display = '';
+
         labourCart.forEach((item, index) => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--card-border);">${item.name}</td>
                 <td style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--card-border);">${item.qty} <small>${item.unit}</small></td>
                 <td style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--card-border);">${item.rate}</td>
-                <td style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--card-border);">${(item.qty * item.rate).toFixed(2)}</td>
+                <td style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--card-border);">${(item.qty === 0 ? item.rate : item.qty * item.rate).toFixed(2)}</td>
                 <td style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--card-border);"><button class="icon-btn text-red" onclick="removeLabourCartItem(${index})" style="background:none; border:none; color: var(--red); cursor: pointer;" title="Remove">🗑️</button></td>
             `;
             list.appendChild(tr);
         });
     }
-    
+
     calculateTotal();
 };
 
@@ -217,8 +217,9 @@ document.getElementById('add-to-labour-cart-btn')?.addEventListener('click', () 
         showAlert('Error', 'Please select an item.');
         return;
     }
-    const qty = parseFloat(document.getElementById('labour-qty').value) || 0;
-    if (qty <= 0) {
+    const qtyText = document.getElementById('labour-qty').value;
+    const qty = parseFloat(qtyText);
+    if (qtyText === '' || isNaN(qty) || qty < 0) {
         showAlert('Error', 'Please enter a valid quantity.');
         return;
     }
@@ -236,7 +237,7 @@ document.getElementById('add-to-labour-cart-btn')?.addEventListener('click', () 
             const parsed = JSON.parse(selectedItemVal);
             itemName = parsed.name;
             itemUnit = parsed.unit;
-        } catch(e) {}
+        } catch (e) { }
     }
 
     labourCart.push({
@@ -255,7 +256,7 @@ document.getElementById('add-to-labour-cart-btn')?.addEventListener('click', () 
 const calculateTotal = () => {
     let itemsTotal = 0;
     labourCart.forEach(i => {
-        itemsTotal += (i.qty * i.rate);
+        itemsTotal += (i.qty === 0 ? i.rate : i.qty * i.rate);
     });
     const extra = parseFloat(document.getElementById('labour-extra-fee')?.value) || 0;
     labourTotal.value = (itemsTotal + extra).toFixed(2);
@@ -289,13 +290,13 @@ const calculateLabourBalance = (name) => {
             cleanName === cleanSearchStr
         );
         if (isMatch) {
-            const total = (t.quantity * t.price) + (parseFloat(t.freight) || 0);
-            if (t.type === 'labour_charge' || t.type === 'labour_load' || t.type === 'labour_unload') bal -= total;
-            else if (t.type === 'labour_payment') bal += total;
-            else if (t.type === 'payment_out') bal += total;
-            else if (t.type === 'sale') bal += total;
-            else if (t.type === 'purchase') bal -= total;
-            else if (t.type === 'payment_in') bal -= total;
+            if (!t.type.startsWith('labour_')) return;
+            const isLabourWork = t.type === 'labour_charge' || t.type === 'labour_load' || t.type === 'labour_unload';
+            const itemTotal = (isLabourWork && t.quantity === 0) ? t.price : (t.quantity * t.price);
+            const total = itemTotal + (parseFloat(t.freight) || 0);
+            
+            if (isLabourWork) bal += total;
+            else if (t.type === 'labour_payment') bal -= total;
         }
     });
     return bal;
@@ -311,6 +312,7 @@ const renderHistory = (name) => {
 
     // First get all person txns to calculate running balance accurately
     let personTxns = transactions.filter(t => {
+        if (!t.type.startsWith('labour_')) return false;
         const rawName = (t.personName || '').trim().toLowerCase();
         const cleanName = rawName.replace(/^\d+\s*-\s*/, '').trim();
         return searchStr && (
@@ -325,18 +327,15 @@ const renderHistory = (name) => {
 
     let currentBalance = 0;
     personTxns.forEach(t => {
-        const total = (t.quantity * t.price) + (parseFloat(t.freight) || 0);
-        if (t.type === 'labour_charge' || t.type === 'labour_load' || t.type === 'labour_unload') currentBalance -= total;
-        else if (t.type === 'labour_payment') currentBalance += total;
-        else if (t.type === 'payment_out') currentBalance += total;
-        else if (t.type === 'sale') currentBalance += total;
-        else if (t.type === 'purchase') currentBalance -= total;
-        else if (t.type === 'payment_in') currentBalance -= total;
+        const isLabourWork = t.type === 'labour_charge' || t.type === 'labour_load' || t.type === 'labour_unload';
+        const itemTotal = (isLabourWork && t.quantity === 0) ? t.price : (t.quantity * t.price);
+        const total = itemTotal + (parseFloat(t.freight) || 0);
+        if (isLabourWork) currentBalance += total;
+        else if (t.type === 'labour_payment') currentBalance -= total;
         t._runningBalance = currentBalance;
     });
 
-    // Filter only labour related transactions
-    let txns = personTxns.filter(t => t.type.startsWith('labour_'));
+    let txns = [...personTxns];
 
     const timeFilter = document.getElementById('history-time-filter')?.value || 'all';
     if (timeFilter === 'week') {
@@ -354,12 +353,12 @@ const renderHistory = (name) => {
     if (txns.length === 0) {
         historyList.innerHTML = '';
         historyEmptyState.classList.remove('hidden');
-        document.querySelector('.table-container').classList.add('hidden');
+        document.querySelector('#labour-history-section .table-container').classList.add('hidden');
         return;
     }
 
     historyEmptyState.classList.add('hidden');
-    document.querySelector('.table-container').classList.remove('hidden');
+    document.querySelector('#labour-history-section .table-container').classList.remove('hidden');
 
     // Group txns by txnId
     const groups = {};
@@ -370,7 +369,9 @@ const renderHistory = (name) => {
     });
 
     const combinedTxns = Object.values(groups).map(group => {
-        const charge = group.find(t => t.type !== 'labour_payment');
+        const charges = group.filter(t => t.type !== 'labour_payment');
+        const charge = charges.length > 0 ? charges[0] : undefined;
+        const lastCharge = charges.length > 0 ? charges[charges.length - 1] : undefined;
         const payment = group.find(t => t.type === 'labour_payment');
         const base = charge || payment;
         return {
@@ -378,9 +379,10 @@ const renderHistory = (name) => {
             date: base.date,
             time: base.time,
             charge: charge,
+            charges: charges,
             payment: payment,
             // If payment exists, it was processed last, so it holds the final running balance
-            _runningBalance: payment ? payment._runningBalance : charge._runningBalance
+            _runningBalance: payment ? payment._runningBalance : (lastCharge ? lastCharge._runningBalance : 0)
         };
     });
 
@@ -409,20 +411,28 @@ const renderHistory = (name) => {
         const dispQty = c ? `${c.quantity} <span style="font-size: 0.85em; color: var(--text-primary);">${c.unit || 'Kg'}</span>` : '-';
 
         let dispWorkType = '-';
-        if (c) {
+        let totalChargeVal = 0;
+        if (item.charges && item.charges.length > 0) {
+            item.charges.forEach(ch => {
+                const cIsLabour = ch.type === 'labour_charge' || ch.type === 'labour_load' || ch.type === 'labour_unload';
+                totalChargeVal += ((cIsLabour && ch.quantity === 0) ? ch.price : ch.quantity * ch.price) + (parseFloat(ch.freight) || 0);
+            });
             if (c.type === 'labour_load') dispWorkType = 'Load';
             else if (c.type === 'labour_unload') dispWorkType = 'Unload';
             else dispWorkType = 'Normal';
-            
+
             const extraFee = parseFloat(c.freight) || 0;
             if (extraFee > 0) {
                 dispWorkType += `<br><small class="text-secondary">Fee: ${formatCurrency(extraFee)}</small>`;
+            }
+            if (item.charges.length > 1) {
+                dispWorkType += `<br><small class="text-secondary">(${item.charges.length} items)</small>`;
             }
         } else if (p && !c) {
             dispWorkType = (p.itemName.split('/')[1] || '-').trim();
         }
 
-        const chargeAmt = c ? formatCurrency((c.quantity * c.price) + (parseFloat(c.freight) || 0)) : '-';
+        const chargeAmt = c ? formatCurrency(totalChargeVal) : '-';
         const paidAmt = p ? formatCurrency((p.quantity * p.price) + (parseFloat(p.freight) || 0)) : '-';
 
         const dateObj = new Date(item.date);
@@ -436,8 +446,8 @@ const renderHistory = (name) => {
             <td><strong>${dispItem}</strong></td>
             <td>${dispQty}</td>
             <td>${dispWorkType}</td>
-            <td><span style="font-weight: 600; color: var(--green);">${c ? '+' + chargeAmt : chargeAmt}</span></td>
-            <td><span style="font-weight: 600; color: var(--red);">${p ? '-' + paidAmt : paidAmt}</span></td>
+            <td><span style="font-weight: 600; color: var(--green);">${c ? chargeAmt : '-'}</span></td>
+            <td><span style="font-weight: 600; color: var(--red);">${p ? paidAmt : '-'}</span></td>
             <td style="font-weight: 600;">${formatCurrency(item._runningBalance)}</td>
             <td>
                 <button class="action-icon text-red" style="background: none; border: none; cursor: pointer; color: var(--red);" onclick="deleteLabourTxnGroup('${item.txnId}')" title="Delete">
@@ -466,10 +476,11 @@ document.getElementById('history-time-filter')?.addEventListener('change', () =>
 saveLabourBtn.addEventListener('click', () => {
     const name = labourName.value.trim();
     const date = labourDate.value || new Date().toISOString().split('T')[0];
-    
+
     const selectedItemVal = labourItem.value;
-    const qty = parseFloat(labourQty.value) || 0;
-    if (selectedItemVal && qty > 0) {
+    const qtyText = labourQty.value;
+    const qty = parseFloat(qtyText);
+    if (selectedItemVal && qtyText !== '' && !isNaN(qty) && qty >= 0) {
         document.getElementById('add-to-labour-cart-btn').click();
     }
 
@@ -479,7 +490,7 @@ saveLabourBtn.addEventListener('click', () => {
     const workType = document.getElementById('labour-work-type')?.value || 'normal';
 
     let itemsTotal = 0;
-    labourCart.forEach(i => itemsTotal += (i.qty * i.rate));
+    labourCart.forEach(i => itemsTotal += (i.qty === 0 ? i.rate : i.qty * i.rate));
     const total = itemsTotal + extra;
 
     if (!name) {
